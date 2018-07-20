@@ -3,9 +3,10 @@
 
 #include "SFLDefine.h"
 #include "SFLToolBtn.h"
+#include <QOpenGLFunctions>
 #include <QDebug>
 
-class SFLModelAbstract
+class SFLModelAbstract:public QOpenGLFunctions
 {
 public:
     static SFLModelAbstract *currentUseWidget;

@@ -2,7 +2,7 @@
 
 SFLModelAbstract *SFLModelAbstract::currentUseWidget = nullptr;
 
-SFLModelAbstract::SFLModelAbstract()
+SFLModelAbstract::SFLModelAbstract():QOpenGLFunctions()
 {
     _btn = new SFLToolBtn();
     _btn->setOwner(this);
