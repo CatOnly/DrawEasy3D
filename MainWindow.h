@@ -3,6 +3,10 @@
 
 #include <QMainWindow>
 
+class SFLToolBar;
+class SFLViewControl;
+class SFLViewRender;
+class SFLModelAbstract;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -12,11 +16,13 @@ public:
     ~MainWindow();
 
 private:
-    QWidget     *_renderView;
-    QDockWidget *_controlView;
-    QToolBar    *_toolBar;
+    SFLViewRender  *_renderView;
+    SFLViewControl *_controlView;
+    SFLToolBar     *_toolBar;
 
     void setupUI();
+    void resetCamera();
+    void setCurrentModel(SFLModelAbstract *model);
 };
 
 #endif // MAINWINDOW_H

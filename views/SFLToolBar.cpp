@@ -1,6 +1,7 @@
 #include "SFLToolBar.h"
-#include <QMenu>
-#include <QToolButton>
+#include <vector>
+#include "../models/SFLModelNoLight.h"
+#include "../models/SFLModelLight.h"
 
 #define ICON_PLAY ":/play.png"
 #define ICON_PAUSE ":/pause.png"
@@ -11,9 +12,31 @@ SFLToolBar::SFLToolBar(QWidget *parent):QToolBar(parent)
 {
     _isPlaying = false;
     _actPlay = addAction(QIcon(QString(ICON_PLAY)), QString(ICON_PLAY_TXT), this, &SFLToolBar::clickPlay);
+    _renderObjects = new vector<SFLModelAbstract *>();
 
+    initData();
     setupUI();
 }
+
+SFLToolBar::~SFLToolBar(){
+    for(vector<SFLModelAbstract *>::iterator iter = _renderObjects->begin(); iter != _renderObjects->end(); ++iter){
+        SFLModelAbstract *pointer = *iter;
+        DELETE_SAFE(pointer)
+    }
+    DELETE_SAFE(_renderObjects)
+}
+
+void SFLToolBar::initData()
+{
+    _renderObjects->push_back(new SFLModelNoLight());
+    _renderObjects->push_back(new SFLModelLight());
+}
+
+//    QAction *action = new QAction("色彩着色");
+//    action = new QAction("纹理贴图");
+
+//    action = new QAction("色彩光照");
+//    action = new QAction("冯氏光照模型"); // Phone Illumination
 
 void SFLToolBar::setupUI()
 {
@@ -22,18 +45,9 @@ void SFLToolBar::setupUI()
     setIconSize(QSize(18, 18));
     setToolButtonStyle(Qt::ToolButtonIconOnly);
 
-    QMenu *menu = new QMenu(this);
-    menu->setTearOffEnabled(false);
-    menu->addAction("颜色");
-    menu->addAction("冯氏光照模型（Phone Illumination）");
-
-    QToolButton *btn = new QToolButton(this);
-    btn->setText("光照");
-    btn->setArrowType(Qt::NoArrow);
-    btn->setPopupMode(QToolButton::InstantPopup);
-    btn->setMenu(menu);
-
-    addWidget(btn);
+    for (auto iter = _renderObjects->begin(); iter != _renderObjects->end(); ++iter) {
+        addWidget((*iter)->toolBtn());
+    }
 }
 
 void SFLToolBar::clickPlay()
@@ -42,4 +56,7 @@ void SFLToolBar::clickPlay()
 
     _actPlay->setIcon(QIcon(QString(_isPlaying ? ICON_PAUSE :ICON_PLAY )));
     _actPlay->setIconText(QString(_isPlaying ? ICON_PAUSE_TXT : ICON_PLAY_TXT));
+}
+vector<SFLModelAbstract *> * SFLToolBar::renderObjects(){
+    return _renderObjects;
 }

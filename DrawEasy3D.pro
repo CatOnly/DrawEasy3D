@@ -22,6 +22,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+#   CONFIG += precompile_header
+#   PRECOMPILED_HEADER = common/SFLDefine.h
 
 SOURCES += \
         main.cpp \
@@ -29,14 +31,22 @@ SOURCES += \
     views/SFLViewRender.cpp \
     views/SFLViewControl.cpp \
     views/SFLToolBar.cpp \
-    views/SFLViewLight.cpp
+    views/SFLViewLight.cpp \
+    views/SFLViewNoLight.cpp \
+    common/SFLModelAbstract.cpp
 
 HEADERS += \
         MainWindow.h \
     views/SFLViewRender.h \
     views/SFLViewControl.h \
     views/SFLToolBar.h \
-    views/SFLViewLight.h
+    views/SFLViewLight.h \
+    common/SFLModelAbstract.h \
+    models/SFLModelLight.h \
+    views/SFLViewNoLight.h \
+    common/SFLDefine.h \
+    models/SFLModelNoLight.h \
+    common/SFLToolBtn.h
 
 RESOURCES += \
     assets/assetInfo.qrc

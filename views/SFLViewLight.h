@@ -8,6 +8,7 @@ class SFLViewLight : public QWidget
     Q_OBJECT
 public:
     explicit SFLViewLight(QWidget *parent = nullptr);
+    ~SFLViewLight();
 
 signals:
 
