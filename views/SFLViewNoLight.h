@@ -1,21 +1,21 @@
 #ifndef SFLVIEWNOLIGHT_H
 #define SFLVIEWNOLIGHT_H
 
-#include <QWidget>
+#include "../common/SFLViewAbstract.h"
 
-class SFLViewNoLight : public QWidget
+class SFLVec3Editor;
+class SFLViewNoLight : public SFLViewAbstract
 {
     Q_OBJECT
 public:
-    explicit SFLViewNoLight(QWidget *parent = nullptr);
+    explicit SFLViewNoLight(SFLModelAbstract *owner, QWidget *parent = nullptr);
     ~SFLViewNoLight();
 
-signals:
-
-public slots:
-
+    void changeViewBy(int index) override;
 
 protected:
+    SFLVec3Editor *_vec3Color;
+
     void setupUI();
 };
 

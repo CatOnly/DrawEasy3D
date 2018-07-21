@@ -32,12 +32,6 @@ void SFLToolBar::initData()
     _renderObjects->push_back(new SFLModelLight());
 }
 
-//    QAction *action = new QAction("色彩着色");
-//    action = new QAction("纹理贴图");
-
-//    action = new QAction("色彩光照");
-//    action = new QAction("冯氏光照模型"); // Phone Illumination
-
 void SFLToolBar::setupUI()
 {
     setMovable(false);

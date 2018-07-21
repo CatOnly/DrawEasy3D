@@ -4,7 +4,6 @@
 #include "../common/SFLModelAbstract.h"
 #include "../views/SFLViewLight.h"
 #include <QImage>
-
 #define SIZE_VAO 5
 #define SIZE_VBO 5
 #define SIZE_EBO 5
@@ -14,18 +13,20 @@ class SFLModelLight: public SFLModelAbstract
 {
 public:
     SFLModelLight():SFLModelAbstract() {
-        _view = new SFLViewLight();
         _btn->setText("有光照");
+        _view = new SFLViewLight(this);
     }
     ~SFLModelLight(){
-        glDeleteVertexArrays(SIZE_VAO, _vertexArrayObjects);
-        glDeleteBuffers(SIZE_VBO, _vertexBufferObjects);
-        glDeleteBuffers(SIZE_EBO, _elementBufferObjects);
-        glDeleteTextures(SIZE_TEX, _textures);
+        if (_hasInitialized){
+            glDeleteVertexArrays(SIZE_VAO, _vertexArrayObjects);
+            glDeleteBuffers(SIZE_VBO, _vertexBufferObjects);
+            glDeleteBuffers(SIZE_EBO, _elementBufferObjects);
+            glDeleteTextures(SIZE_TEX, _textures);
+        }
     }
 
     void initializeOpenGLFunctions(){
-        QOpenGLFunctions::initializeOpenGLFunctions();
+        SFLModelAbstract::initializeOpenGLFunctions();
         // 在 GPU 开辟缓存空间
         glGenVertexArrays(SIZE_VAO, _vertexArrayObjects);
         glGenBuffers(SIZE_VBO, _vertexBufferObjects);
@@ -33,7 +34,7 @@ public:
         glGenTextures(SIZE_TEX, _textures);
     }
 
-    void render(){
+    void render() override{
         glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
     }
 

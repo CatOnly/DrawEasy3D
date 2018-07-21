@@ -1,4 +1,5 @@
 #include "SFLModelAbstract.h"
+#include <QDebug>
 
 SFLModelAbstract *SFLModelAbstract::currentUseWidget = nullptr;
 
@@ -17,7 +18,13 @@ SFLModelAbstract::~SFLModelAbstract()
     qDebug()<< __func__;
 }
 
-QWidget *SFLModelAbstract::view()
+void SFLModelAbstract::initializeOpenGLFunctions()
+{
+    QOpenGLFunctions::initializeOpenGLFunctions();
+    _hasInitialized = true;
+}
+
+SFLViewAbstract *SFLModelAbstract::view()
 {
     return _view;
 }

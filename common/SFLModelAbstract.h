@@ -3,8 +3,8 @@
 
 #include "SFLDefine.h"
 #include "SFLToolBtn.h"
+#include "SFLViewAbstract.h"
 #include <QOpenGLFunctions>
-#include <QDebug>
 
 class SFLModelAbstract:public QOpenGLFunctions
 {
@@ -15,12 +15,14 @@ public:
 
     virtual ~SFLModelAbstract();
     virtual void render() = 0;
+    void initializeOpenGLFunctions();
 
-    QWidget *view();
+    SFLViewAbstract *view();
     SFLToolBtn *toolBtn();
 
 protected:
-    QWidget *_view = nullptr;
+    bool _hasInitialized = false;
+    SFLViewAbstract *_view = nullptr;
     SFLToolBtn *_btn = nullptr;
 };
 #endif // SFLMODELABSTRACT_H

@@ -8,11 +8,11 @@ class SFLModelNoLight: public SFLModelAbstract
 {
 public:
     SFLModelNoLight():SFLModelAbstract(){
-        _view = new SFLViewNoLight();
         _btn->setText("无光照");
+        _view = new SFLViewNoLight(this);
     }
 
-    void render(){
+    void render() override{
         glClearColor(0.2f, 0.0f, 0.0f, 1.0f);
     }
 

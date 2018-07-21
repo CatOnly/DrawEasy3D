@@ -5,7 +5,7 @@
 
 SFLViewRender::SFLViewRender(QWidget *parent):QOpenGLWidget(parent)
 {
-    grabKeyboard();
+//    grabKeyboard();
     setFixedSize(700, 700);
 }
 

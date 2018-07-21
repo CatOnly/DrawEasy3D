@@ -15,17 +15,16 @@ MainWindow::MainWindow(QWidget *parent)
     _toolBar = new SFLToolBar(this);
 
     setupUI();
-    connect((SFLViewControl *)_controlView, &SFLViewControl::resetCamera, this, &MainWindow::resetCamera);
-    auto renderObjects = _toolBar->renderObjects();
-    for (auto iter = renderObjects->begin(); iter != renderObjects->end(); ++iter){
-        SFLModelAbstract *model = *iter;
-        connect(model->toolBtn(), &SFLToolBtn::clicked, this, &MainWindow::setCurrentModel);
-    }
 }
 
 MainWindow::~MainWindow()
 {
-
+    disconnect((SFLViewControl *)_controlView, &SFLViewControl::resetCamera, this, &MainWindow::resetCamera);
+    auto renderObjects = _toolBar->renderObjects();
+    for (auto iter = renderObjects->begin(); iter != renderObjects->end(); ++iter){
+        SFLModelAbstract *model = *iter;
+        disconnect(model->toolBtn(), &SFLToolBtn::clicked, this, &MainWindow::setCurrentModel);
+    }
 }
 
 void MainWindow::setupUI()
@@ -38,6 +37,13 @@ void MainWindow::setupUI()
     setGeometry((deskRect.width() - width()) * 0.5, (deskRect.height() - height()) * 0.5, width(), height());
     setFixedSize(_renderView->width() + _controlView->width(), _renderView->height());
     setWindowTitle("Keep Reading , Keep Writing , Keep Coding");
+
+    connect((SFLViewControl *)_controlView, &SFLViewControl::resetCamera, this, &MainWindow::resetCamera);
+    auto renderObjects = _toolBar->renderObjects();
+    for (auto iter = renderObjects->begin(); iter != renderObjects->end(); ++iter){
+        SFLModelAbstract *model = *iter;
+        connect(model->toolBtn(), &SFLToolBtn::clicked, this, &MainWindow::setCurrentModel);
+    }
 }
 
 void MainWindow::resetCamera()

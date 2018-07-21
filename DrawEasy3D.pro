@@ -26,28 +26,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #   PRECOMPILED_HEADER = common/SFLDefine.h
 INCLUDEPATH += $$PWD/library/glm
 
-SOURCES += \
-        main.cpp \
-        MainWindow.cpp \
-    views/SFLViewRender.cpp \
-    views/SFLViewControl.cpp \
-    views/SFLToolBar.cpp \
-    views/SFLViewLight.cpp \
-    views/SFLViewNoLight.cpp \
-    common/SFLModelAbstract.cpp
-
 HEADERS += \
-        MainWindow.h \
-    views/SFLViewRender.h \
-    views/SFLViewControl.h \
-    views/SFLToolBar.h \
-    views/SFLViewLight.h \
-    common/SFLModelAbstract.h \
-    models/SFLModelLight.h \
-    views/SFLViewNoLight.h \
-    common/SFLDefine.h \
-    models/SFLModelNoLight.h \
-    common/SFLToolBtn.h \
     library/glm/detail/_features.hpp \
     library/glm/detail/_fixes.hpp \
     library/glm/detail/_noise.hpp \
@@ -192,7 +171,37 @@ HEADERS += \
     library/glm/vec2.hpp \
     library/glm/vec3.hpp \
     library/glm/vec4.hpp \
-    library/glm/vector_relational.hpp
+    library/glm/vector_relational.hpp \
+    common/SFLVec3Editor.h \
+    common/SFLSelectorLayout.h \
+    common/SFLViewAbstract.h \
+    common/SFLVec1Editor.h
+
+SOURCES += \
+        main.cpp \
+        MainWindow.cpp \
+    views/SFLViewRender.cpp \
+    views/SFLViewControl.cpp \
+    views/SFLToolBar.cpp \
+    views/SFLViewLight.cpp \
+    views/SFLViewNoLight.cpp \
+    common/SFLModelAbstract.cpp \
+    common/SFLVec3Editor.cpp \
+    common/SFLSelectorLayout.cpp \
+    common/SFLVec1Editor.cpp
+
+HEADERS += \
+        MainWindow.h \
+    views/SFLViewRender.h \
+    views/SFLViewControl.h \
+    views/SFLToolBar.h \
+    views/SFLViewLight.h \
+    common/SFLModelAbstract.h \
+    models/SFLModelLight.h \
+    views/SFLViewNoLight.h \
+    common/SFLDefine.h \
+    models/SFLModelNoLight.h \
+    common/SFLToolBtn.h
 
 RESOURCES += \
     assets/assetInfo.qrc
