@@ -25,8 +25,7 @@ public:
         }
     }
 
-    void initializeOpenGLFunctions(){
-        SFLModelAbstract::initializeOpenGLFunctions();
+    void initializeOpenGL() override {
         // 在 GPU 开辟缓存空间
         glGenVertexArrays(SIZE_VAO, _vertexArrayObjects);
         glGenBuffers(SIZE_VBO, _vertexBufferObjects);
@@ -35,7 +34,7 @@ public:
     }
 
     void render() override{
-        glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+        glClearColor(0.1f, 0.0f, 0.3f, 1.0f);
     }
 
 protected:

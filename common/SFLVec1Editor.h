@@ -10,11 +10,18 @@ class SFLVec1Editor: public QHBoxLayout
     Q_OBJECT
 
 public:
-    explicit SFLVec1Editor(const QString title, QWidget *parent = nullptr);
+    enum SFLVec1Type{
+        typeColor,
+        typePosition
+    };
+
+    explicit SFLVec1Editor(const QString title, SFLVec1Type type = typeColor, QWidget *parent = nullptr);
     ~SFLVec1Editor();
 
     void setValue(double x);
     void setSuffix(QString sufffix);
+    void hide();
+    void show();
 
 signals:
     void changeValue(double value);
@@ -23,6 +30,7 @@ public slots:
     void onValueChanged(double value);
 
 private:
+    SFLVec1Type _type;
     QLabel *_titleLabel;
     QDoubleSpinBox* _doubleSpineBox;
 

@@ -15,6 +15,7 @@ public:
 
     virtual ~SFLModelAbstract();
     virtual void render() = 0;
+    virtual void initializeOpenGL() = 0;
     void initializeOpenGLFunctions();
 
     SFLViewAbstract *view();

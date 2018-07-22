@@ -59,3 +59,9 @@ void MainWindow::setCurrentModel(SFLModelAbstract *model)
         SFLModelAbstract::currentUseWidget = model;
     }
 }
+
+void MainWindow::show()
+{
+    QMainWindow::show();
+    setCurrentModel(_toolBar->renderObjects()->at(0));
+}

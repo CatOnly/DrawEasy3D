@@ -5,6 +5,7 @@ SFLModelAbstract *SFLModelAbstract::currentUseWidget = nullptr;
 
 SFLModelAbstract::SFLModelAbstract():QOpenGLFunctions()
 {
+    _hasInitialized = false;
     _btn = new SFLToolBtn();
     _btn->setOwner(this);
     _btn->setToolButtonStyle(Qt::ToolButtonTextOnly);
@@ -20,7 +21,10 @@ SFLModelAbstract::~SFLModelAbstract()
 
 void SFLModelAbstract::initializeOpenGLFunctions()
 {
+    if (_hasInitialized) return;
+
     QOpenGLFunctions::initializeOpenGLFunctions();
+    initializeOpenGL();
     _hasInitialized = true;
 }
 

@@ -30,6 +30,18 @@ void SFLSelectorLayout::setupUI()
     connect(_comboBox, funPtr, this, &SFLSelectorLayout::onSelectChanged);
 }
 
+void SFLSelectorLayout::hide()
+{
+    _titleLabel->hide();
+    _comboBox->hide();
+}
+
+void SFLSelectorLayout::show()
+{
+    _titleLabel->show();
+    _comboBox->show();
+}
+
 void SFLSelectorLayout::setSelections(QStringList list)
 {
     _comboBox->clear();

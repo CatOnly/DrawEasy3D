@@ -5,12 +5,12 @@
 SFLVec3Editor::SFLVec3Editor(const QString title, SFLVec3Type type, QWidget *parent):QHBoxLayout(parent){
     _type = type;
     switch (type) {
-    case vec3Color:
+    case typeColor:
         _widgetX = widgetColor();
         _widgetY = widgetColor();
         _widgetZ = widgetColor();
         break;
-    case vec3Position:
+    case typePosition:
         _widgetX = widgetPosition();
         _widgetY = widgetPosition();
         _widgetZ = widgetPosition();
@@ -45,6 +45,22 @@ void SFLVec3Editor::setupUI(){
     connect(_widgetX, funPtr, this, &SFLVec3Editor::onValueChangedX);
     connect(_widgetY, funPtr, this, &SFLVec3Editor::onValueChangedY);
     connect(_widgetZ, funPtr, this, &SFLVec3Editor::onValueChangedZ);
+}
+
+void SFLVec3Editor::hide()
+{
+    _titleLabel->hide();
+    _widgetX->hide();
+    _widgetY->hide();
+    _widgetZ->hide();
+}
+
+void SFLVec3Editor::show()
+{
+    _titleLabel->show();
+    _widgetX->show();
+    _widgetY->show();
+    _widgetZ->show();
 }
 
 void SFLVec3Editor::setVec3Vals(double x, double y, double z){

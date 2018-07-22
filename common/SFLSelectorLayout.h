@@ -13,6 +13,8 @@ public:
     ~SFLSelectorLayout();
 
     void setSelections(QStringList list);
+    void hide();
+    void show();
 
 signals:
     void selectChanged(int index);

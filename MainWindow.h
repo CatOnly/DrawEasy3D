@@ -15,6 +15,8 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void show();
+
 private:
     SFLViewRender  *_renderView;
     SFLViewControl *_controlView;

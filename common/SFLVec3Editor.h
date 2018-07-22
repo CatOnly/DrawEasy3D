@@ -11,15 +11,17 @@ class SFLVec3Editor: public QHBoxLayout
 
 public:
     enum SFLVec3Type{
-        vec3Color,
-        vec3Position
+        typeColor,
+        typePosition
     };
 
-    explicit SFLVec3Editor(const QString title, SFLVec3Type type = vec3Color, QWidget *parent = nullptr);
+    explicit SFLVec3Editor(const QString title, SFLVec3Type type = typeColor, QWidget *parent = nullptr);
     ~SFLVec3Editor();
 
     void setVec3Vals(double x, double y, double z);
     void setSuffix(QString sufffix);
+    void hide();
+    void show();
 
 signals:
     void changeValue(double x, double y, double z);

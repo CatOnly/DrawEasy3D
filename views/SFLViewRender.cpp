@@ -5,13 +5,16 @@
 
 SFLViewRender::SFLViewRender(QWidget *parent):QOpenGLWidget(parent)
 {
-//    grabKeyboard();
     setFixedSize(700, 700);
 }
 
 void SFLViewRender::paintGL()
 {
-    if (_delegate != nullptr) _delegate->render();
+    if (!_delegate) return;
+
+    _delegate->render();
+
+    qDebug() << __func__ << _delegate;
 }
 
 void SFLViewRender::initializeGL()
@@ -62,23 +65,27 @@ void SFLViewRender::keyPressEvent(QKeyEvent *event)
         keyName = "D";
         break;
     }
-    QMetaObject::invokeMethod(this, "update", Qt::DirectConnection);
     qDebug() << "Key Press " << keyName;
+
+    update();
+//    QMetaObject::invokeMethod(this, "update", Qt::DirectConnection);
 }
 
 void SFLViewRender::mousePressEvent(QMouseEvent *event)
 {
     _currentPoint = event->pos();
+    update();
 }
 void SFLViewRender::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint offsetPos = event->pos() - _currentPoint;
 
-    QMetaObject::invokeMethod(this, "update", Qt::DirectConnection);
+    update();
 }
 void SFLViewRender::mouseReleaseEvent(QMouseEvent *event)
 {
-
+    setFocus();
+    update();
 }
 
 void SFLViewRender::setDelegate(SFLModelAbstract *delegate)
@@ -87,4 +94,5 @@ void SFLViewRender::setDelegate(SFLModelAbstract *delegate)
         _delegate = delegate;
         _delegate->initializeOpenGLFunctions();
     }
+    update();
 }

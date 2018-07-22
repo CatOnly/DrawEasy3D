@@ -11,7 +11,7 @@
 SFLToolBar::SFLToolBar(QWidget *parent):QToolBar(parent)
 {
     _isPlaying = false;
-    _actPlay = addAction(QIcon(QString(ICON_PLAY)), QString(ICON_PLAY_TXT), this, &SFLToolBar::clickPlay);
+//    _actPlay = addAction(QIcon(QString(ICON_PLAY)), QString(ICON_PLAY_TXT), this, &SFLToolBar::clickPlay);
     _renderObjects = new vector<SFLModelAbstract *>();
 
     initData();
@@ -29,7 +29,7 @@ SFLToolBar::~SFLToolBar(){
 void SFLToolBar::initData()
 {
     _renderObjects->push_back(new SFLModelNoLight());
-    _renderObjects->push_back(new SFLModelLight());
+//    _renderObjects->push_back(new SFLModelLight());
 }
 
 void SFLToolBar::setupUI()
