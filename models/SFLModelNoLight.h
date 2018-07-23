@@ -53,6 +53,8 @@ public:
     }
 
     void render() override {
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
         glUseProgram(_programID);
         glUniform1f(glGetUniformLocation(_programID, "hasRightDir"), _hasRightDirection ? 1.0f : 0.0f);
         glUniform1f(glGetUniformLocation(_programID, "colorWeight"), _mixColorWeight);
@@ -65,7 +67,7 @@ public:
         transform = glm::translate(transform, _move);
 
         glm::mat4 view = glm::lookAt(
-                            glm::vec3(0,0,-2),
+                            glm::vec3(0,0,2),
                             glm::vec3(0,0,0),
                             glm::vec3(0,1,0)
                          );
@@ -205,9 +207,9 @@ private:
         uniform float hasRightDir;\
         uniform mat4 transform;\
         void main(){\
-            gl_Position = transform * vec4(position, 1.0f);\
+            gl_Position = transform * vec4(position, 1.0);\
             ourColor = color;\
-            TexCoord = (hasRightDir == 1.0f ? vec2(texCoord.x, 1.0f - texCoord.y) : texCoord);\
+            TexCoord = (hasRightDir == 1.0 ? vec2(texCoord.x, 1.0 - texCoord.y) : texCoord);\
         }";
         const char * shaderSrcFragment = "#version 330 core\
         in vec3 ourColor;\
