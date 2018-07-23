@@ -18,6 +18,12 @@ public slots:
     void setIsOnlyDrawLine(int index);
     void setIsRightDir(int index);
     void setColorWeight(double weight);
+    void setScale(double x, double y, double z);
+    void setRotate(double x, double y, double z);
+    void setOffset(double x, double y, double z);
+    void setViewAngle(double angle);
+    void setViewFront(double front);
+    void setViewFarther(double farther);
 
 protected:
     SFLSelectorLayout *_drawType;
@@ -26,6 +32,9 @@ protected:
     SFLVec3Editor *_scale;
     SFLVec3Editor *_rotate;
     SFLVec3Editor *_move;
+    SFLVec1Editor *_viewAngle;
+    SFLVec1Editor *_viewFront;
+    SFLVec1Editor *_viewFarther;
 
     void setupUI();
 };

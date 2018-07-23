@@ -43,6 +43,7 @@ void MainWindow::setupUI()
     for (auto iter = renderObjects->begin(); iter != renderObjects->end(); ++iter){
         SFLModelAbstract *model = *iter;
         connect(model->toolBtn(), &SFLToolBtn::clicked, this, &MainWindow::setCurrentModel);
+        connect(model->view(), &SFLViewAbstract::needRender, _renderView, &SFLViewRender::update);
     }
 }
 

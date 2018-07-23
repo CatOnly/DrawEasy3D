@@ -8,9 +8,14 @@ class SFLModelAbstract;
 class SFLViewRender: public QOpenGLWidget,
                      public QOpenGLFunctions
 {
+    Q_OBJECT
+
 public:
     SFLViewRender(QWidget *parent);
     void setDelegate(SFLModelAbstract *delegate);
+
+public slots:
+    void update();
 
 protected:
     void paintGL() override;

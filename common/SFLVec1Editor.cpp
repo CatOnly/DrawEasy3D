@@ -21,8 +21,8 @@ void SFLVec1Editor::setupUI(){
     _titleLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     _titleLabel->setTextFormat(Qt::PlainText);
     _titleLabel->setTextInteractionFlags(Qt::NoTextInteraction);
+    _doubleSpineBox->setDecimals(1);
     if (_type == typeColor){
-        _doubleSpineBox->setDecimals(1);
         _doubleSpineBox->setSingleStep(0.1);
         _doubleSpineBox->setRange(0.0, 1.0);
     }

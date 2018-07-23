@@ -93,6 +93,12 @@ void SFLViewRender::setDelegate(SFLModelAbstract *delegate)
     if (delegate != nullptr && delegate != _delegate){
         _delegate = delegate;
         _delegate->initializeOpenGLFunctions();
+        setFocus();
     }
     update();
+}
+
+void SFLViewRender::update()
+{
+    QOpenGLWidget::update();
 }

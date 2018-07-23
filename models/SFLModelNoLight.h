@@ -3,9 +3,12 @@
 
 #include "../common/SFLModelAbstract.h"
 #include "../views/SFLViewNoLight.h"
-#include <sstream>
 #include <QImage>
+#include <QCoreApplication>
 #include <QDebug>
+#include <gtc/type_ptr.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <glm.hpp>
 
 class SFLModelNoLight: public SFLModelAbstract
 {
@@ -13,6 +16,9 @@ public:
     SFLModelNoLight():SFLModelAbstract(){
         _btn->setText("无光照");
         _view = new SFLViewNoLight(this);
+        _rotateAngle = glm::vec3(0.0, 0.0, 0.0);
+        _scale = glm::vec3(1.0, 1.0, 1.0);
+        _move = glm::vec3(0.0, 0.0, 0.0);
 
         setHasTexture(false);
         setHasRightDirection(false);
@@ -51,6 +57,23 @@ public:
         glUniform1f(glGetUniformLocation(_programID, "hasRightDir"), _hasRightDirection ? 1.0f : 0.0f);
         glUniform1f(glGetUniformLocation(_programID, "colorWeight"), _mixColorWeight);
 
+        glm::mat4 transform(1.0);
+        transform = glm::rotate(transform, _rotateAngle.x, glm::vec3(1.0, 0.0, 0.0));
+        transform = glm::rotate(transform, _rotateAngle.y, glm::vec3(0.0, 1.0, 0.0));
+        transform = glm::rotate(transform, _rotateAngle.z, glm::vec3(0.0, 0.0, 1.0));
+        transform = glm::scale(transform, _scale);
+        transform = glm::translate(transform, _move);
+
+        glm::mat4 view = glm::lookAt(
+                            glm::vec3(0,0,-2),
+                            glm::vec3(0,0,0),
+                            glm::vec3(0,1,0)
+                         );
+        transform = glm::perspective(_viewAngle, 1.0f, _viewFront, _viewFarther) * view * transform;
+//        logMatrix(transform);
+
+        glUniformMatrix4fv(glGetUniformLocation(_programID, "transform"), 1, GL_FALSE, glm::value_ptr(transform));
+
         if (_hasTexture){
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, _texture2DRef);
@@ -59,6 +82,16 @@ public:
         glBindVertexArray(_vertexArrayObjRef);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+    }
+
+    void setRotate(double x, double y, double z){
+        _rotateAngle = glm::vec3((float)x, (float)y, (float)z);
+    }
+    void setScale(double x, double y, double z){
+        _scale = glm::vec3((float)x, (float)y, (float)z);
+    }
+    void setMove(double x, double y, double z){
+        _move = glm::vec3((float)x, (float)y, (float)z);
     }
 
     void setHasTexture(bool hasTexture){
@@ -71,8 +104,40 @@ public:
     void setMixColorWeight(float weight){
         _mixColorWeight = weight;
     }
+    float coloWeight(){
+        return _mixColorWeight;
+    }
+
     void setIsOnlyDrawLine(bool isDrawLine){
         _isOnlyDrawLine = isDrawLine;
+    }
+    void setViewAngle(GLfloat angle){
+        _viewAngle = angle;
+    }
+    GLfloat viewAngle(){
+        return _viewAngle;
+    }
+
+    void setViewFront(GLfloat front){
+        _viewFront = front;
+    }
+    GLfloat viewFront(){
+        return _viewFront;
+    }
+
+    void setViewFarther(GLfloat farther){
+        _viewFarther = farther;
+    }
+    GLfloat viewFarther(){
+        return _viewFarther;
+    }
+
+    void logMatrix(glm::mat4 matrix){
+        float *a = glm::value_ptr(matrix);
+        qDebug() << "matrix" << endl;
+        for (int i=0; i < 4; ++i){
+            qDebug() << *(a + i * 4) << *(a + i * 4 + 1) << *(a + i * 4 + 2) << *(a + i * 4 + 3);
+        }
     }
 
 private:
@@ -80,6 +145,12 @@ private:
     bool _hasTexture;
     bool _hasRightDirection;
     float _mixColorWeight = 0.4f;
+    glm::vec3 _rotateAngle;
+    glm::vec3 _scale;
+    glm::vec3 _move;
+    GLfloat _viewAngle = 45.0f;
+    GLfloat _viewFront = 0.1f;
+    GLfloat _viewFarther = 100.0f;
 
     GLuint _vertexArrayObjRef = 0;   // 顶点数组对象，储存 顶点属性
     GLuint _vertexBufferObjRef = 0;  // 顶点缓冲对象
@@ -132,8 +203,9 @@ private:
         out vec3 ourColor;\
         out vec2 TexCoord;\
         uniform float hasRightDir;\
+        uniform mat4 transform;\
         void main(){\
-            gl_Position = vec4(position, 1.0f);\
+            gl_Position = transform * vec4(position, 1.0f);\
             ourColor = color;\
             TexCoord = (hasRightDir == 1.0f ? vec2(texCoord.x, 1.0f - texCoord.y) : texCoord);\
         }";

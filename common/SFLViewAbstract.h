@@ -6,6 +6,8 @@
 class SFLModelAbstract;
 class SFLViewAbstract:public QWidget
 {
+    Q_OBJECT
+
 public:
     explicit SFLViewAbstract(SFLModelAbstract *owner, QWidget *parent = nullptr):QWidget(parent) {
         _owner = owner;
@@ -16,6 +18,9 @@ public:
     QStringList types(){
         return _types;
     }
+
+signals:
+    void needRender();
 
 protected:
     QStringList _types;
