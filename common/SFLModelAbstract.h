@@ -6,6 +6,11 @@
 #include "SFLViewAbstract.h"
 #include <QOpenGLFunctions>
 
+#include <gtc/type_ptr.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <glm.hpp>
+#include "../renders/SFLCameraVirtual.h"
+
 class SFLModelAbstract:public QOpenGLFunctions
 {
 public:
@@ -16,14 +21,19 @@ public:
     virtual ~SFLModelAbstract();
     virtual void render() = 0;
     virtual void initializeOpenGL() = 0;
+
     void initializeOpenGLFunctions();
+    void setDelegate(SFLCameraVirtual * delegate);
+    void logMatrix(glm::mat4 matrix);
 
     SFLViewAbstract *view();
     SFLToolBtn *toolBtn();
 
 protected:
+    int _times;
     bool _hasInitialized = false;
     SFLViewAbstract *_view = nullptr;
     SFLToolBtn *_btn = nullptr;
+    SFLCameraVirtual *_delegateCamaera = nullptr;
 };
 #endif // SFLMODELABSTRACT_H

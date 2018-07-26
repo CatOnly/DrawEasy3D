@@ -6,15 +6,12 @@
 #include <QImage>
 #include <QCoreApplication>
 #include <QDebug>
-#include <gtc/type_ptr.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <glm.hpp>
 
 class SFLModelNoLight: public SFLModelAbstract
 {
 public:
     SFLModelNoLight():SFLModelAbstract(){
-        _btn->setText("无光照");
+        _btn->setText("基本操作");
         _view = new SFLViewNoLight(this);
         _rotateAngle = glm::vec3(0.0, 0.0, 0.0);
         _scale = glm::vec3(1.0, 1.0, 1.0);
@@ -65,20 +62,15 @@ public:
         transform = glm::rotate(transform, _rotateAngle.z, glm::vec3(0.0, 0.0, 1.0));
         transform = glm::scale(transform, _scale);
         transform = glm::translate(transform, _move);
-
-        glm::mat4 view = glm::lookAt(
-                            glm::vec3(0,0,2),
-                            glm::vec3(0,0,0),
-                            glm::vec3(0,1,0)
-                         );
-        transform = glm::perspective(_viewAngle, 1.0f, _viewFront, _viewFarther) * view * transform;
-//        logMatrix(transform);
-
+        transform = glm::perspective(_viewAngle, 1.0f, _viewFront, _viewFarther) * _delegateCamaera->viewMatrix() * transform;
         glUniformMatrix4fv(glGetUniformLocation(_programID, "transform"), 1, GL_FALSE, glm::value_ptr(transform));
 
         if (_hasTexture){
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, _texture2DRef);
+        } else {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
         glPolygonMode(GL_FRONT_AND_BACK, _isOnlyDrawLine ? GL_LINE : GL_FILL);
         glBindVertexArray(_vertexArrayObjRef);
@@ -98,7 +90,6 @@ public:
 
     void setHasTexture(bool hasTexture){
         _hasTexture = hasTexture;
-        _mixColorWeight = _hasTexture ? 0.4f : 1.0f;
     }
     void setHasRightDirection(bool hasRightDir){
         _hasRightDirection = hasRightDir;
@@ -109,50 +100,30 @@ public:
     float coloWeight(){
         return _mixColorWeight;
     }
-
     void setIsOnlyDrawLine(bool isDrawLine){
         _isOnlyDrawLine = isDrawLine;
     }
     void setViewAngle(GLfloat angle){
         _viewAngle = angle;
     }
-    GLfloat viewAngle(){
-        return _viewAngle;
-    }
-
     void setViewFront(GLfloat front){
         _viewFront = front;
     }
-    GLfloat viewFront(){
-        return _viewFront;
-    }
-
     void setViewFarther(GLfloat farther){
         _viewFarther = farther;
-    }
-    GLfloat viewFarther(){
-        return _viewFarther;
-    }
-
-    void logMatrix(glm::mat4 matrix){
-        float *a = glm::value_ptr(matrix);
-        qDebug() << "matrix" << endl;
-        for (int i=0; i < 4; ++i){
-            qDebug() << *(a + i * 4) << *(a + i * 4 + 1) << *(a + i * 4 + 2) << *(a + i * 4 + 3);
-        }
     }
 
 private:
     bool _isOnlyDrawLine;
     bool _hasTexture;
     bool _hasRightDirection;
-    float _mixColorWeight = 0.4f;
+    float _mixColorWeight = 0.4;
     glm::vec3 _rotateAngle;
     glm::vec3 _scale;
     glm::vec3 _move;
-    GLfloat _viewAngle = 45.0f;
-    GLfloat _viewFront = 0.1f;
-    GLfloat _viewFarther = 100.0f;
+    GLfloat _viewAngle = 45.0;
+    GLfloat _viewFront = 0.1;
+    GLfloat _viewFarther = 100.0;
 
     GLuint _vertexArrayObjRef = 0;   // 顶点数组对象，储存 顶点属性
     GLuint _vertexBufferObjRef = 0;  // 顶点缓冲对象

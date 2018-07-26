@@ -24,6 +24,7 @@ MainWindow::~MainWindow()
     for (auto iter = renderObjects->begin(); iter != renderObjects->end(); ++iter){
         SFLModelAbstract *model = *iter;
         disconnect(model->toolBtn(), &SFLToolBtn::clicked, this, &MainWindow::setCurrentModel);
+        disconnect(model->view(), &SFLViewAbstract::needRender, _renderView, &SFLViewRender::update);
     }
 }
 
@@ -42,6 +43,7 @@ void MainWindow::setupUI()
     auto renderObjects = _toolBar->renderObjects();
     for (auto iter = renderObjects->begin(); iter != renderObjects->end(); ++iter){
         SFLModelAbstract *model = *iter;
+        model->setDelegate(_renderView->cameraVirtual());
         connect(model->toolBtn(), &SFLToolBtn::clicked, this, &MainWindow::setCurrentModel);
         connect(model->view(), &SFLViewAbstract::needRender, _renderView, &SFLViewRender::update);
     }
@@ -49,7 +51,8 @@ void MainWindow::setupUI()
 
 void MainWindow::resetCamera()
 {
-    qDebug() << __func__;
+    _renderView->cameraVirtual()->resetData();
+    _renderView->update();
 }
 
 void MainWindow::setCurrentModel(SFLModelAbstract *model)

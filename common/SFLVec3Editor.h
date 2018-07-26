@@ -18,6 +18,7 @@ public:
     explicit SFLVec3Editor(const QString title, SFLVec3Type type = typeColor, QWidget *parent = nullptr);
     ~SFLVec3Editor();
 
+    void setVec3Vals(double x);
     void setVec3Vals(double x, double y, double z);
     void setSuffix(QString sufffix);
     void hide();

@@ -9,11 +9,13 @@ class SFLSelectorLayout;
 class SFLViewNoLight : public SFLViewAbstract
 {
     Q_OBJECT
+
 public:
     explicit SFLViewNoLight(SFLModelAbstract *owner, QWidget *parent = nullptr);
     ~SFLViewNoLight();
 
 public slots:
+    void initDataCamera() override;
     void changeViewBy(int index) override;
     void setIsOnlyDrawLine(int index);
     void setIsRightDir(int index);
@@ -36,7 +38,8 @@ protected:
     SFLVec1Editor *_viewFront;
     SFLVec1Editor *_viewFarther;
 
-    void setupUI();
+    void setupUI() override;
+    void initData() override;
 };
 
 #endif // SFLVIEWNOLIGHT_H

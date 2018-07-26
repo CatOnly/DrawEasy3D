@@ -5,6 +5,7 @@
 #include <QOpenGLFunctions>
 
 class SFLModelAbstract;
+class SFLCameraVirtual;
 class SFLViewRender: public QOpenGLWidget,
                      public QOpenGLFunctions
 {
@@ -13,6 +14,7 @@ class SFLViewRender: public QOpenGLWidget,
 public:
     SFLViewRender(QWidget *parent);
     void setDelegate(SFLModelAbstract *delegate);
+    SFLCameraVirtual *cameraVirtual();
 
 public slots:
     void update();
@@ -27,6 +29,7 @@ protected:
 
     QPoint _currentPoint;
     SFLModelAbstract *_delegate = nullptr;
+    SFLCameraVirtual *_camera = nullptr;
 };
 
 #endif // SFLVIEWRENDER_H

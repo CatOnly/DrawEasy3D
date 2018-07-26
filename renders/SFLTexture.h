@@ -8,11 +8,12 @@ class SFLTexture : public QOpenGLFunctions
 public:
     SFLTexture(bool isUseMipMap = false):QOpenGLFunctions() {
         _isUseMipMap = isUseMipMap;
+//        _texIDMap[8] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7};
     }
     ~SFLTexture() {
         if (!_isInitialized || !_isCreateBySelf || !_texRef) return;
 
-        glDeleteTextures(1, _texRef);
+        glDeleteTextures(1, &_texRef);
     }
     void initializeOpenGLFunctions(){
         _isInitialized = true;
@@ -22,7 +23,7 @@ public:
     void creat(){
         _isCreateBySelf = true;
 
-        glGenTextures(1, _texRef);
+        glGenTextures(1, &_texRef);
         _texID = _texIDMap[_texRef];
     }
     void setRef(GLuint id){
@@ -61,7 +62,7 @@ public:
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 
-    void loadTexture2DFromPath(const char * path){
+    void loadTexture2DFromPath(const char * imgPath){
         QImage qImage(imgPath);
         int width = qImage.width();
         int height = qImage.height();
@@ -86,6 +87,6 @@ private:
     bool _isCreateBySelf = false;
     GLuint _texRef = 0;
     GLuint _texID = 0;
-    GLuint _texIDMap[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7};
+    GLuint _texIDMap[8];
 };
 #endif // SFLTEXTURE_H

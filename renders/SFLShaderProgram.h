@@ -1,19 +1,24 @@
 #ifndef SFLSHADERPROGRAM_H
 #define SFLSHADERPROGRAM_H
 
+#include <sstream>
+#include <fstream>
 #include <QOpenGLFunctions>
 #include <QCoreApplication>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
+#include <QDebug>
+
 #include <gtc/type_ptr.hpp>
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
-#include <QDebug>
 
 using namespace std;
 
 class SFLShaderProgram: public QOpenGLFunctions
 {
 public:
-    SFLShaderProgram();
+    SFLShaderProgram(){ }
     ~SFLShaderProgram(){
         if (!_programID || !_isInitialized) return;
 
@@ -25,33 +30,35 @@ public:
     }
 
     void loadFromStr(const char *strVertex, const char *strFragment){
-        _shaderVertex = loadFromStr(GL_VERTEX_SHADER, strVertex);
-        _shaderFragment = loadFromStr(GL_FRAGMENT_SHADER, strVertex);
+        GLuint shaderVertex = loadFromStr(GL_VERTEX_SHADER, strVertex);
+        GLuint shaderFragment = loadFromStr(GL_FRAGMENT_SHADER, strFragment);
+
+        create(shaderVertex, shaderFragment);
     }
     void loadFromPath(const char *pathVertex, const char *pathFragment){
-        _shaderVertex = loadFromPath(GL_VERTEX_SHADER, pathVertex);
-        _shaderFragment = loadFromPath(GL_FRAGMENT_SHADER, pathFragment);
+        GLuint shaderVertex = loadFromPath(GL_VERTEX_SHADER, pathVertex);
+        GLuint shaderFragment = loadFromPath(GL_FRAGMENT_SHADER, pathFragment);
+
+        create(shaderVertex, shaderFragment);
     }
 
-    void create(){
-        if (!_programID){
-            _programID = glCreateProgram();
-            glAttachShader(_programID, _shaderVertex);
-            glAttachShader(_programID, _shaderFragment);
-            glLinkProgram(_programID);
+    void create(GLuint &shaderVertex, GLuint &shaderFragment){
+        _programID = glCreateProgram();
+        glAttachShader(_programID, shaderVertex);
+        glAttachShader(_programID, shaderFragment);
+        glLinkProgram(_programID);
 
-            GLint success;
-            const GLsizei bufferSize = 512;
-            GLchar inforLog[bufferSize];
-            glGetProgramiv(_programID, GL_LINK_STATUS, &success);
-            if (!success){
-                glGetProgramInfoLog(_programID, bufferSize, NULL, inforLog);
-                qDebug() << "Error: Shader program link " << inforLog << endl;
-            }
-
-            glDeleteShader(_shaderVertex);
-            glDeleteShader(_shaderFragment);
+        GLint success;
+        const GLsizei bufferSize = 512;
+        GLchar inforLog[bufferSize];
+        glGetProgramiv(_programID, GL_LINK_STATUS, &success);
+        if (!success){
+            glGetProgramInfoLog(_programID, bufferSize, NULL, inforLog);
+            qDebug() << "Error: Shader program link " << inforLog << endl;
         }
+
+        glDeleteShader(shaderVertex);
+        glDeleteShader(shaderFragment);
     }
 
     void bind(){
@@ -76,7 +83,7 @@ public:
     void setUniform3f(const char* nameAttr, GLfloat x, GLfloat y, GLfloat z){
         glUniform3f(glGetUniformLocation(_programID, nameAttr), x, y, z);
     }
-    void setUniform3f(const char* nameAttr, glm::vec3 &vector){
+    void setUniform3f(const char* nameAttr, glm::vec3 vector){
          setUniform3f(nameAttr, vector.x, vector.y, vector.z);
     }
 
@@ -91,13 +98,12 @@ public:
 private:
     bool _isInitialized = false;
     GLuint _programID = 0;
-    GLuint _shaderVertex = 0;
-    GLuint _shaderFragment = 0;
 
     SFLShaderProgram(const SFLShaderProgram &);
     SFLShaderProgram &operator = (const SFLShaderProgram &);
 
-    GLuint loadFromStr(GLenum &&type, const char *shaderSrc) {
+    GLuint loadFromStr(GLenum type, const char *shaderSrc) {
+//        qDebug()  << __func__ << endl << shaderSrc;
         GLuint shader = glCreateShader(type);
         glShaderSource(shader, 1, &shaderSrc, NULL);
         glCompileShader(shader);
@@ -113,36 +119,42 @@ private:
 
         return shader;
     }
-    GLuint loadFromPath(GLenum &&type, const char *filePath) {
-        QString basePath = QCoreApplication::applicationDirPath();
+    GLuint loadFromPath(GLenum type, const char *filePath) {
+        QFile inputFile(filePath);
+        inputFile.open(QIODevice::ReadOnly);
+        QTextStream in(&inputFile);
+        QString code = in.readAll();
+        inputFile.close();
 
-        string path = basePath.toStdString() + string(filePath);
-        // 从文件路径中获取顶点/片段着色器
-        string code;
-        ifstream file;
-        // 保证ifstream对象可以抛出异常：
-        file.exceptions(ifstream::badbit);
-        try {
-            // 打开文件
-            file.open(path);
-            stringstream fileStrStream;
-            // 读取文件的缓冲内容到流中
-            fileStrStream << file.rdbuf();
-            // 关闭文件
-            file.close();
-            // 转换流至GLchar数组
-            code = fileStrStream.str();
-        } catch(ifstream::failure e) {
-            qDebug() << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << endl;
-        }
+//        QString basePath = QCoreApplication::applicationDirPath();
 
-        if (code.empty()){
-            qDebug() << "ERROR: NO shader code create!" << endl
-                     << "Shader Path: "<< path.c_str();
-        }
-    //    qDebug() << code.c_str();
+//        string path = basePath.toStdString() + string(filePath);
+//        // 从文件路径中获取顶点/片段着色器
+//        string code;
+//        ifstream file;
+//        // 保证ifstream对象可以抛出异常：
+//        file.exceptions(ifstream::badbit);
+//        try {
+//            // 打开文件
+//            file.open(path);
+//            stringstream fileStrStream;
+//            // 读取文件的缓冲内容到流中
+//            fileStrStream << file.rdbuf();
+//            // 关闭文件
+//            file.close();
+//            // 转换流至GLchar数组
+//            code = fileStrStream.str();
+//        } catch(ifstream::failure e) {
+//            qDebug() << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << endl;
+//        }
 
-        return loadFromStr(type, code.c_str());
+//        if (code.empty()){
+//            qDebug() << "ERROR: NO shader code create!" << endl
+//                     << "Shader Path: "<< path.c_str();
+//        }
+//        qDebug() << code;
+
+        return loadFromStr(type, code.toStdString().c_str());
     }
 };
 

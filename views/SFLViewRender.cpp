@@ -2,9 +2,11 @@
 #include <QKeyEvent>
 #include "SFLViewRender.h"
 #include "../common/SFLModelAbstract.h"
+#include "../renders/SFLCameraVirtual.h"
 
 SFLViewRender::SFLViewRender(QWidget *parent):QOpenGLWidget(parent)
 {
+    _camera = new SFLCameraVirtual(glm::vec3(0.0, 0.0, 3.0));
     setFixedSize(700, 700);
 }
 
@@ -50,18 +52,22 @@ void SFLViewRender::keyPressEvent(QKeyEvent *event)
     switch(event->key()){
     case Qt::Key_W:
     case Qt::Key_Up:
+        _camera->moveStepFromDirection(SFLCameraVirtual::moveForward);
         keyName = "W";
         break;
     case Qt::Key_S:
     case Qt::Key_Down:
+        _camera->moveStepFromDirection(SFLCameraVirtual::moveBackward);
         keyName = "S";
         break;
     case Qt::Key_A:
     case Qt::Key_Left:
+        _camera->moveStepFromDirection(SFLCameraVirtual::moveLeft);
         keyName = "A";
         break;
     case Qt::Key_D:
     case Qt::Key_Right:
+        _camera->moveStepFromDirection(SFLCameraVirtual::moveRight);
         keyName = "D";
         break;
     }
@@ -79,7 +85,7 @@ void SFLViewRender::mousePressEvent(QMouseEvent *event)
 void SFLViewRender::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint offsetPos = event->pos() - _currentPoint;
-
+    _camera->rotateByMouseOffset(offsetPos.x(), offsetPos.y());
     update();
 }
 void SFLViewRender::mouseReleaseEvent(QMouseEvent *event)
@@ -101,4 +107,9 @@ void SFLViewRender::setDelegate(SFLModelAbstract *delegate)
 void SFLViewRender::update()
 {
     QOpenGLWidget::update();
+}
+
+SFLCameraVirtual* SFLViewRender::cameraVirtual()
+{
+    return _camera;
 }

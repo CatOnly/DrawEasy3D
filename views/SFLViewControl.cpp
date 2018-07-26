@@ -82,5 +82,6 @@ void SFLViewControl::changeKinds(int index)
 
 void SFLViewControl::resetCameraBtnClicked()
 {
+    _delegate->view()->initDataCamera();
     emit resetCamera();
 }

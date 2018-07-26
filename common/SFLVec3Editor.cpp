@@ -68,6 +68,9 @@ void SFLVec3Editor::setVec3Vals(double x, double y, double z){
     _widgetY->setValue(y);
     _widgetZ->setValue(z);
 }
+void SFLVec3Editor::setVec3Vals(double x){
+    setVec3Vals(x, x, x);
+}
 
 void SFLVec3Editor::setSuffix(QString sufffix){
     _widgetX->setSuffix(sufffix);

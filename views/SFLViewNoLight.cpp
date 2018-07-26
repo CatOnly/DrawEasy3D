@@ -3,7 +3,6 @@
 #include "../common/SFLSelectorLayout.h"
 #include "../common/SFLVec1Editor.h"
 #include "../common/SFLVec3Editor.h"
-#include <QVBoxLayout>
 #include <QLabel>
 
 SFLViewNoLight::SFLViewNoLight(SFLModelAbstract *owner, QWidget *parent) : SFLViewAbstract(owner, parent)
@@ -22,9 +21,34 @@ SFLViewNoLight::SFLViewNoLight(SFLModelAbstract *owner, QWidget *parent) : SFLVi
     _viewFarther = new SFLVec1Editor("远平面", SFLVec1Editor::typePosition);
 
     setupUI();
+    initData();
 }
-SFLViewNoLight::~SFLViewNoLight(){
+SFLViewNoLight::~SFLViewNoLight()
+{
+    disconnect(_drawType, &SFLSelectorLayout::selectChanged, this, &SFLViewNoLight::setIsOnlyDrawLine);
+    disconnect(_direction, &SFLSelectorLayout::selectChanged, this, &SFLViewNoLight::setIsRightDir);
+    disconnect(_colorWeight, &SFLVec1Editor::changeValue, this, &SFLViewNoLight::setColorWeight);
+    disconnect(_scale, &SFLVec3Editor::changeValue, this, &SFLViewNoLight::setScale);
+    disconnect(_rotate, &SFLVec3Editor::changeValue, this, &SFLViewNoLight::setRotate);
+    disconnect(_move, &SFLVec3Editor::changeValue, this, &SFLViewNoLight::setOffset);
+    disconnect(_viewAngle, &SFLVec1Editor::changeValue, this, &SFLViewNoLight::setViewAngle);
+    disconnect(_viewFront, &SFLVec1Editor::changeValue, this, &SFLViewNoLight::setViewFront);
+    disconnect(_viewFarther, &SFLVec1Editor::changeValue, this, &SFLViewNoLight::setViewFarther);
+}
 
+void SFLViewNoLight::initDataCamera()
+{
+    _viewAngle->setValue(45.0);
+    _viewFront->setValue(0.1);
+    _viewFarther->setValue(100.0);
+}
+
+void SFLViewNoLight::initData(){
+    _colorWeight->setValue(0.4);
+    _scale->setVec3Vals(1.0, 1.0, 1.0);
+    _rotate->setVec3Vals(0.0, 0.0, 0.0);
+    _move->setVec3Vals(0.0, 0.0, 0.0);
+    initDataCamera();
 }
 
 void SFLViewNoLight::setupUI()
@@ -34,17 +58,11 @@ void SFLViewNoLight::setupUI()
     QLabel *subTitle2 = new QLabel("视口设置");
     subTitle2->setContentsMargins(10, 5, 10, 0);
 
-    SFLModelNoLight *owner = static_cast<SFLModelNoLight *>(_owner);
-
-    _colorWeight->setValue(owner->coloWeight());
     _viewAngle->setSuffix("º");
-    _viewAngle->setValue(owner->viewAngle());
-    _viewFront->setValue(owner->viewFront());
-    _viewFarther->setValue(owner->viewFarther());
-    _scale->setVec3Vals(1.0, 1.0, 1.0);
 
-    QVBoxLayout *layoutMain = new QVBoxLayout(this);
-    setLayout(layoutMain);
+
+    QVBoxLayout *layoutMain = static_cast<QVBoxLayout *>(layout());
+
     layoutMain->setContentsMargins(0,0,0,0);
     layoutMain->addLayout(_drawType);
     layoutMain->addLayout(_direction);

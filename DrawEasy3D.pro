@@ -28,8 +28,8 @@ INCLUDEPATH += $$PWD/library/glm
 
 SOURCES += \
         main.cpp \
-        MainWindow.cpp \
-    views/SFLViewRender.cpp \
+        MainWindow.cpp\
+    views/SFLViewRender.cpp\
     views/SFLViewControl.cpp \
     views/SFLToolBar.cpp \
     views/SFLViewLight.cpp \
@@ -37,7 +37,11 @@ SOURCES += \
     common/SFLModelAbstract.cpp \
     common/SFLVec3Editor.cpp \
     common/SFLSelectorLayout.cpp \
-    common/SFLVec1Editor.cpp
+    common/SFLVec1Editor.cpp \
+    views/SFLViewLightCaster.cpp \
+    views/SFLViewMapping.cpp \
+    views/SFLViewLoadModel.cpp \
+    views/SFLViewPostprocessing.cpp
 
 HEADERS += \
         MainWindow.h \
@@ -58,7 +62,15 @@ HEADERS += \
     renders/SFLShaderProgram.h \
     renders/SFLCameraVirtual.h \
     renders/SFLTexture.h \
-    renders/SFLVertexArray.h
+    renders/SFLVertexArray.h \
+    models/SFLModelLightCaster.h \
+    views/SFLViewLightCaster.h \
+    models/SFLModelMapping.h \
+    views/SFLViewMapping.h \
+    models/SFLModelLoadModel.h \
+    views/SFLViewLoadModel.h \
+    models/SFLModelPostprocessing.h \
+    views/SFLViewPostprocessing.h
 
 HEADERS += \
     library/glm/detail/_features.hpp \

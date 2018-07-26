@@ -12,8 +12,8 @@ public:
     ~SFLVertexArray() {
         if (!_isInitialized || !_isCreateBySelf || !_vertexArrayRef) return;
 
-        glDeleteVertexArrays(1, _vertexArrayRef);
-        glDeleteBuffers(1, _vertexBufferRef);
+        glDeleteVertexArrays(1, &_vertexArrayRef);
+        glDeleteBuffers(1, &_vertexBufferRef);
     }
 
     void initializeOpenGLFunctions(){
@@ -24,8 +24,8 @@ public:
     void create(){
         _isCreateBySelf = true;
 
-        glGenVertexArrays(1, _vertexArrayRef);
-        glGenBuffers(1, _vertexBufferRef);
+        glGenVertexArrays(1, &_vertexArrayRef);
+        glGenBuffers(1, &_vertexBufferRef);
     }
 
     void setRef(GLuint vao, GLuint vbo = 0){
@@ -37,29 +37,34 @@ public:
 
     void bind(){
         glBindVertexArray(_vertexArrayRef);
-        glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferRef);
     }
     void unBind(){
         glBindVertexArray(0);
     }
 
-    void setDataFormate(vector<int> &format){
-        _format = format;
-    }
+    void setData(GLfloat *array, GLsizei size, GLsizei countPoints, vector<int> format, GLenum draw = GL_STATIC_DRAW) {
+        _count = countPoints;
 
-    void setData(GLfloat *array, GLenum draw = GL_STATIC_DRAW) {
-        glBufferData(GL_ARRAY_BUFFER, sizeof(array), array, draw);
+        glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferRef);
+        glBufferData(GL_ARRAY_BUFFER, size * sizeof(GLfloat), array, draw);
+
         // 告诉 OpenGL 如何解析传入的顶点数据
         int total = 0;
-        for (int i = 0; i < _format.size(); ++i){
-            total += _format.at(i);
+        for (size_t i = 0; i < format.size(); ++i){
+            total += format.at(i);
         }
         int offset = 0;
-        for (int i = 0; i < _format.size(); ++i){
-            offset += i > 0 ? _format.at(i - 1) * sizeof(GLfloat) : 0;
-            glVertexAttribPointer(i, _format.at(i), GL_FLOAT, GL_FALSE, total * sizeof(GLfloat),  (void *)offset);
+        for (size_t i = 0; i < format.size(); ++i){
+            offset += i > 0 ? format.at(i - 1) * sizeof(GLfloat) : 0;
+            glVertexAttribPointer(i, format.at(i), GL_FLOAT, GL_FALSE, total * sizeof(GLfloat),  (GLvoid *)offset);
             glEnableVertexAttribArray(i);
         }
+    }
+
+    void draw(GLint beginIdx = 0, GLsizei count = 0){
+        if (count) _count = count;
+
+        glDrawArrays(GL_TRIANGLES, beginIdx, _count);
     }
 
 private:
@@ -67,6 +72,6 @@ private:
     bool _isCreateBySelf = false;
     GLuint _vertexArrayRef = 0;
     GLuint _vertexBufferRef = 0;
-    vector<int> _format;
+    GLsizei _count = 0;
 };
 #endif // SFLVERTEXARRAY_H

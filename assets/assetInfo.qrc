@@ -7,5 +7,10 @@
         <file>pause.png</file>
         <file>play.png</file>
         <file>theCat.jpeg</file>
+        <file>lightPhone.fsh</file>
+        <file>lightPhone.vsh</file>
+        <file>color.fsh</file>
+        <file>color.vsh</file>
+        <file>colorLight.fsh</file>
     </qresource>
 </RCC>

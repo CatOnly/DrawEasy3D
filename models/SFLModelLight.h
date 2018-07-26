@@ -3,88 +3,186 @@
 
 #include "../common/SFLModelAbstract.h"
 #include "../views/SFLViewLight.h"
-#include <QImage>
-#define SIZE_VAO 5
-#define SIZE_VBO 5
-#define SIZE_EBO 5
-#define SIZE_TEX 5
+#include "../renders/SFLShaderProgram.h"
+#include "../renders/SFLVertexArray.h"
 
 class SFLModelLight: public SFLModelAbstract
 {
 public:
+    enum ShaderType {
+        typeColor,
+        typeLight,
+        typeLightModel
+    };
+
     SFLModelLight():SFLModelAbstract() {
-        _btn->setText("有光照");
+        _btn->setText("光照模型");
         _view = new SFLViewLight(this);
+        _vao = new SFLVertexArray();
+        _programColor = new SFLShaderProgram();
+        _programLight = new SFLShaderProgram();
+        _programLightModel = new SFLShaderProgram();
+
+        type = typeColor;
+        isRotateLight = false;
+        lightColor = glm::vec3(1.0);
+        lightAmbient = glm::vec3(0.2);
+        lightDiffuse = glm::vec3(0.5);
+        lightSpecular = glm::vec3(1.0);
+
+        isRotateModel = false;
+        materialColor = glm::vec3(1.0, 0.5, 0.3);
+        materialAmbient = glm::vec3(1.0, 0.5, 0.3);
+        materialDiffuse = glm::vec3(1.0, 0.5, 0.3);
+        materialSpecular = glm::vec3(0.5);
     }
     ~SFLModelLight(){
-        if (_hasInitialized){
-            glDeleteVertexArrays(SIZE_VAO, _vertexArrayObjects);
-            glDeleteBuffers(SIZE_VBO, _vertexBufferObjects);
-            glDeleteBuffers(SIZE_EBO, _elementBufferObjects);
-            glDeleteTextures(SIZE_TEX, _textures);
-        }
+
     }
 
     void initializeOpenGL() override {
-        // 在 GPU 开辟缓存空间
-        glGenVertexArrays(SIZE_VAO, _vertexArrayObjects);
-        glGenBuffers(SIZE_VBO, _vertexBufferObjects);
-        glGenBuffers(SIZE_EBO, _elementBufferObjects);
-        glGenTextures(SIZE_TEX, _textures);
+        GLfloat vertices[] = {
+                                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                                 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                                -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+                                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                                 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                                 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                                 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                                -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+                                -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+                                -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+                                -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+                                -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+                                -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+                                -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+                                 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+                                 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+                                 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+                                 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+                                 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+                                 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+                                -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+                                 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+                                 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+                                 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+                                -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+                                -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+                                -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+                                 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+                                 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+                                 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+                                -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+                                -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+                              };
+        _vao->initializeOpenGLFunctions();
+        _vao->create();
+        _vao->bind();
+        _vao->setData(vertices, 6 * 6 * 6, 36, {3,3});
+
+        glm::mat4 projection = glm::perspective(45.0, 1.0, 0.1, 100.0);
+
+        _programColor->initializeOpenGLFunctions();
+        _programColor->loadFromPath(":/color.vsh",":/color.fsh");
+        _programColor->bind();
+        _programColor->setUniformMatrix4fv("projection", glm::value_ptr(projection));
+
+        _programLight->initializeOpenGLFunctions();
+        _programLight->loadFromPath(":/color.vsh",":/colorLight.fsh");
+        _programLight->bind();
+        _programLight->setUniformMatrix4fv("projection", glm::value_ptr(projection));
+
+        _programLightModel->initializeOpenGLFunctions();
+        _programLightModel->loadFromPath(":/lightPhone.vsh", ":/lightPhone.fsh");
+        _programLightModel->bind();
+        _programLightModel->setUniformMatrix4fv("projection", glm::value_ptr(projection));
     }
 
-    void render() override{
-        glClearColor(0.1f, 0.0f, 0.3f, 1.0f);
+    void render() override {
+        ++_times;
+        glEnable(GL_DEPTH_TEST);
+        glClearColor(0.1, 0.1, 0.1, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        renderModel();
+
+        _vao->bind();
+        _vao->draw();
     }
+
+    ShaderType type;
+
+    bool isRotateLight;
+    bool isRotateModel;
+    glm::vec3 lightColor;
+    glm::vec3 lightAmbient;
+    glm::vec3 lightDiffuse;
+    glm::vec3 lightSpecular;
+
+    glm::vec3 materialColor;
+    glm::vec3 materialAmbient;
+    glm::vec3 materialDiffuse;
+    glm::vec3 materialSpecular;
+    float materialShininess;
 
 protected:
-    GLuint _vertexArrayObjects[SIZE_VAO];
-    GLuint _vertexBufferObjects[SIZE_VBO];
-    GLuint _elementBufferObjects[SIZE_EBO];
-    GLuint _textures[SIZE_TEX];
-    uint _texID = 0;
+    SFLVertexArray *_vao;
+    SFLShaderProgram *_programColor;
+    SFLShaderProgram *_programLight;
+    SFLShaderProgram *_programLightModel;
 
-    uint addTexture(QString texPath) {
-        QImage qImage(texPath);
-        int width = qImage.width();
-        int height = qImage.height();
+    void renderColor(){
 
-        // 设定当前纹理，开始设置纹理属性
-        uint textureID;
-        uint currentTexID = 0;//_textures[_texID];
-        switch (_texID) {
-            case 0: textureID = GL_TEXTURE0; break;
-            case 1: textureID = GL_TEXTURE1; break;
-            case 2: textureID = GL_TEXTURE2; break;
-            case 3: textureID = GL_TEXTURE3; break;
-            case 4: textureID = GL_TEXTURE4; break;
-            case 5: textureID = GL_TEXTURE5; break;
-        }
-        glActiveTexture(textureID);
-        glBindTexture(GL_TEXTURE_2D, currentTexID);
-        ++_texID;
-
-        // 纹理环绕方式
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        // 纹理过滤方式(普通过滤算法)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, qImage.bits());
-
-        return currentTexID;
     }
 
-    uint addTextureUseMipmap(QString texPath){
-        uint texID = addTexture(texPath);
-        // 纹理过滤方式(多级渐远纹理压缩)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    void renderLight(){
 
-        glGenerateMipmap(GL_TEXTURE_2D);
+    }
 
-        return texID;
+    glm::vec3 renderModel(){
+        _programLightModel->bind();
+        qDebug() << "Program ID: "<< _programLightModel->programID();
+
+        GLfloat radius = 2.0;
+        GLfloat speed = 0.02;
+        glm::vec3 lightPosition(1.0, 0.3, 2.0);
+        if (isRotateLight){
+            lightPosition.x += sin(_times * speed) * radius;
+            lightPosition.z += cos(_times * speed) * radius;
+        }
+        _programLightModel->setUniform3f("light.position", lightPosition);
+        _programLightModel->setUniform3f("light.ambient",lightAmbient);
+        _programLightModel->setUniform3f("light.diffuse",lightDiffuse);
+        _programLightModel->setUniform3f("light.specular",lightSpecular);
+
+        _programLightModel->setUniform1f("material.shininess", materialShininess);
+        _programLightModel->setUniform3f("material.ambient", materialAmbient);
+        _programLightModel->setUniform3f("material.diffuse", materialDiffuse);
+        _programLightModel->setUniform3f("material.specular",materialSpecular);
+
+        _programLightModel->setUniform3f("viewPos", glm::vec3(0.0, 0.0, 3.0));
+
+        setProgramMV(_programLightModel, speed);
+
+        return lightPosition;
+    }
+
+    void setProgramMV(SFLShaderProgram *program, GLfloat speed){
+        glm::mat4 model(1.0);
+        if (isRotateModel){
+            model = glm::rotate(model, _times * speed, glm::vec3(1.0f, 0.3f, 0.5f));
+        }
+        program->setUniformMatrix4fv("model", glm::value_ptr(model));
+        program->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
     }
 };
 
