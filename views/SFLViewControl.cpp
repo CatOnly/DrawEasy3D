@@ -12,7 +12,7 @@ SFLViewControl::SFLViewControl(QWidget *parent):QDockWidget(parent)
     _kindsLayout = new SFLSelectorLayout("类型", this);
     _containerLayout = new QVBoxLayout();
     _currentWidget = nullptr;
-    _cameraResetBtn = new QPushButton("重置相机位置",this);
+    _cameraResetBtn = new QPushButton("还 原",this);
 
     setupUI();
 }

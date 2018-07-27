@@ -42,8 +42,8 @@ public:
         glBindVertexArray(0);
     }
 
-    void setData(GLfloat *array, GLsizei size, GLsizei countPoints, vector<int> format, GLenum draw = GL_STATIC_DRAW) {
-        _count = countPoints;
+    void setData(GLfloat *array, GLsizei size, GLsizei pointsCount, vector<int> format, GLenum draw = GL_STATIC_DRAW) {
+        _count = pointsCount;
 
         glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferRef);
         glBufferData(GL_ARRAY_BUFFER, size * sizeof(GLfloat), array, draw);

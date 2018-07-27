@@ -12,5 +12,7 @@
         <file>color.fsh</file>
         <file>color.vsh</file>
         <file>colorLight.fsh</file>
+        <file>lightGouraud.fsh</file>
+        <file>lightGouraud.vsh</file>
     </qresource>
 </RCC>

@@ -1,9 +1,9 @@
 #version 330 core
 out vec4 color;
 
-uniform vec3 uniformColor;
+uniform vec3 materialColor;
 
 void main()
 {
-    color = vec4(uniformColor, 1.0f);
+    color = vec4(materialColor, 1.0f);
 }

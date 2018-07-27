@@ -50,7 +50,7 @@ SFLViewLight::~SFLViewLight()
 void SFLViewLight::initData()
 {
     _lightColor->setVec3Vals(1.0, 1.0, 1.0);
-    _materialColor->setVec3Vals(0.5, 0.5, 0.5);
+    _materialColor->setVec3Vals(1.0, 0.5, 0.31);
 
     _lightAmbient->setVec3Vals(0.2);
     _lightDiffuse->setVec3Vals(0.5);
@@ -60,6 +60,12 @@ void SFLViewLight::initData()
     _materialDiffuse->setVec3Vals(1.0, 0.5, 0.31);
     _materialSpecular->setVec3Vals(0.5);
     _materialShininess->setValue(32.0);
+}
+
+void SFLViewLight::initDataCamera()
+{
+    SFLViewAbstract::initDataCamera();
+    initData();
 }
 
 void SFLViewLight::setupUI()
@@ -217,8 +223,14 @@ void  SFLViewLight::changeViewBy(int index)
         case 1:
             type = SFLModelLight::typeLight;
             break;
+        case 2:
+            type = SFLModelLight::typeModelGouraud;
+            break;
+        case 3:
+            type = SFLModelLight::typeModelPhone;
+            break;
         default:
-            type = SFLModelLight::typeLightModel;
+            type = SFLModelLight::typeColor;
             break;
     }
 

@@ -14,6 +14,7 @@ public:
     ~SFLViewLight();
 
     void initData() override;
+    void initDataCamera() override;
     void changeViewBy(int index) override;
 
     void setIsRotateLight(int index);
