@@ -38,8 +38,12 @@ public:
         materialDiffuse = glm::vec3(1.0, 0.5, 0.3);
         materialSpecular = glm::vec3(0.5);
     }
-    ~SFLModelLight(){
-
+    ~SFLModelLight() {
+        DELETE_SAFE(_vao)
+        DELETE_SAFE(_programColor)
+        DELETE_SAFE(_programLight)
+        DELETE_SAFE(_programModelGouraud)
+        DELETE_SAFE(_programModelPhone)
     }
 
     void initializeOpenGL() override {
@@ -109,7 +113,7 @@ public:
         _programModelGouraud->setUniformMatrix4fv("projection", glm::value_ptr(projection));
 
         _programModelPhone->initializeOpenGLFunctions();
-        _programModelPhone->loadFromPath(":/lightPhone.vsh", ":/lightPhone.fsh");
+        _programModelPhone->loadFromPath(":/lightPhong.vsh", ":/lightPhong.fsh");
         _programModelPhone->bind();
         _programModelPhone->setUniformMatrix4fv("projection", glm::value_ptr(projection));
     }
@@ -130,17 +134,17 @@ public:
             renderLight();
             break;
         case typeModelGouraud:
-            renderModelGouraud(lightPosition);
+            renderModel(_programModelGouraud, lightPosition);
             break;
         case typeModelPhone:
-            renderModelPhone(lightPosition);
+            renderModel(_programModelPhone, lightPosition);
             break;
         }
 
         _programColor->bind();
         glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPosition);
         model = glm::scale(model, glm::vec3(0.2f));
-        _programColor->setUniform3f("materialColor", glm::vec3(1.0));
+        _programColor->setUniform3f("materialColor", lightColor);
         _programColor->setUniformMatrix4fv("model", glm::value_ptr(model));
         _programColor->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
 
@@ -181,7 +185,6 @@ protected:
         _vao->bind();
         _vao->draw();
     }
-
     void renderLight(){
         _programLight->bind();
         _programLight->setUniform3f("lightColor", lightColor);
@@ -194,33 +197,8 @@ protected:
         _vao->bind();
         _vao->draw();
     }
-
-    void renderModelGouraud(glm::vec3 &lightPosition){
-        _programModelGouraud->bind();
-
-        GLfloat radius = 2.0;
-        GLfloat speed = 0.02;
-        if (isRotateLight){
-            lightPosition.x += sin(_times * speed) * radius;
-            lightPosition.z += cos(_times * speed) * radius;
-        }
-        _programModelGouraud->setUniform3f("light.position", lightPosition);
-        _programModelGouraud->setUniform3f("light.ambient",lightAmbient);
-        _programModelGouraud->setUniform3f("light.diffuse",lightDiffuse);
-        _programModelGouraud->setUniform3f("light.specular",lightSpecular);
-
-        _programModelGouraud->setUniform1f("material.shininess", materialShininess);
-        _programModelGouraud->setUniform3f("material.ambient", materialAmbient);
-        _programModelGouraud->setUniform3f("material.diffuse", materialDiffuse);
-        _programModelGouraud->setUniform3f("material.specular",materialSpecular);
-
-        _programModelGouraud->setUniform3f("viewPos", _delegateCamaera->position);
-
-        setProgramMV(_programModelGouraud, speed);
-    }
-
-    void renderModelPhone(glm::vec3 &lightPosition){
-        _programModelPhone->bind();
+    void renderModel(SFLShaderProgram *program, glm::vec3 &lightPosition){
+        program->bind();
 
         GLfloat radius = 2.0;
         GLfloat speed = 0.02;
@@ -228,22 +206,18 @@ protected:
             lightPosition.x += sin(_times * speed) * radius;
             lightPosition.z += cos(_times * speed) * radius;
         }
-        _programModelPhone->setUniform3f("light.position", lightPosition);
-        _programModelPhone->setUniform3f("light.ambient",lightAmbient);
-        _programModelPhone->setUniform3f("light.diffuse",lightDiffuse);
-        _programModelPhone->setUniform3f("light.specular",lightSpecular);
+        program->setUniform3f("light.position", lightPosition);
+        program->setUniform3f("light.ambient",lightAmbient);
+        program->setUniform3f("light.diffuse",lightDiffuse);
+        program->setUniform3f("light.specular",lightSpecular);
 
-        _programModelPhone->setUniform1f("material.shininess", materialShininess);
-        _programModelPhone->setUniform3f("material.ambient", materialAmbient);
-        _programModelPhone->setUniform3f("material.diffuse", materialDiffuse);
-        _programModelPhone->setUniform3f("material.specular",materialSpecular);
+        program->setUniform1f("material.shininess", materialShininess);
+        program->setUniform3f("material.ambient", materialAmbient);
+        program->setUniform3f("material.diffuse", materialDiffuse);
+        program->setUniform3f("material.specular",materialSpecular);
 
-        _programModelPhone->setUniform3f("viewPos", _delegateCamaera->position);
+        program->setUniform3f("viewPos", _delegateCamaera->position);
 
-        setProgramMV(_programModelPhone, speed);
-    }
-
-    void setProgramMV(SFLShaderProgram *program, GLfloat speed){
         glm::mat4 model(1.0);
         if (isRotateModel){
             model = glm::rotate(model, _times * speed, glm::vec3(1.0f, 0.3f, 0.5f));

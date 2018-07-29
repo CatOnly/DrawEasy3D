@@ -73,7 +73,7 @@ public:
     }
 
     void setUniform1i(const char* nameAttr, GLint x){
-        glUniform1i(glGetUniformLocation(_programID, nameAttr), x);
+        glUniform1i(glGetUniformLocation(_programID, nameAttr), x);        
     }
 
     void setUniform1f(const char* nameAttr, GLfloat x){

@@ -38,7 +38,6 @@ SOURCES += \
     common/SFLVec3Editor.cpp \
     common/SFLSelectorLayout.cpp \
     common/SFLVec1Editor.cpp \
-    views/SFLViewLightCaster.cpp \
     views/SFLViewMapping.cpp \
     views/SFLViewLoadModel.cpp \
     views/SFLViewPostprocessing.cpp
@@ -63,8 +62,6 @@ HEADERS += \
     renders/SFLCameraVirtual.h \
     renders/SFLTexture.h \
     renders/SFLVertexArray.h \
-    models/SFLModelLightCaster.h \
-    views/SFLViewLightCaster.h \
     models/SFLModelMapping.h \
     views/SFLViewMapping.h \
     models/SFLModelLoadModel.h \
