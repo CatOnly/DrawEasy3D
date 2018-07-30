@@ -104,58 +104,13 @@ public:
         glm::mat4 projection = glm::perspective(45.0, 1.0, 0.1, 100.0);
         GLfloat *projectonMatPtr = glm::value_ptr(projection);
 
-        _texDiffuse->initializeOpenGLFunctions();
-        _texDiffuse->creat(GL_TEXTURE0);
-        _texDiffuse->loadTexture2DFromPath(":/container2.png");
-
-        _texSpecular->initializeOpenGLFunctions();
-        _texSpecular->creat(GL_TEXTURE1);
-        _texSpecular->loadTexture2DFromPath(":/container2_specular.png");
-
-        _texEmission->initializeOpenGLFunctions();
-        _texEmission->creat(GL_TEXTURE2);
-        _texEmission->loadTexture2DFromPath(":/magic.jpeg");
-
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPosition);
-        model = glm::scale(model, glm::vec3(0.2f));
-        _programLight->initializeOpenGLFunctions();
-        _programLight->loadFromPath(":/color.vsh",":/color.fsh");
-        _programLight->bind();
-        _programLight->setUniformMatrix4fv("projection", projectonMatPtr);
-        _programLight->setUniformMatrix4fv("model", glm::value_ptr(model));
-
-        _programTex->initializeOpenGLFunctions();
-        _programTex->loadFromPath(":/texture.vsh",":/texture.fsh");
-        _programTex->bind();
-        _programTex->setUniform3f("light.position", lightPosition);
-        _programTex->setUniformMatrix4fv("projection", projectonMatPtr);
-        _texDiffuse->bind();
-        _programTex->setUniform1i("material", 0);
-
-        _programDir->initializeOpenGLFunctions();
-        _programDir->loadFromPath(":/lightDir.vsh",":/lightDir.fsh");
-        _programDir->bind();
-        _programDir->setUniform3f("light.direction", -lightPosition);
-        setBaseParam(_programDir, lightPosition, projectonMatPtr);
-
-        _programPoint->initializeOpenGLFunctions();
-        _programPoint->loadFromPath(":/lightPoint.vsh",":/lightPoint.fsh");
-        _programPoint->bind();
-        setBaseParam(_programPoint, lightPosition, projectonMatPtr);
-
-        _programSpot->initializeOpenGLFunctions();
-        _programSpot->loadFromPath(":/lightSpot.vsh",":/lightSpot.fsh");
-        _programSpot->bind();
-        setBaseParam(_programSpot, lightPosition, projectonMatPtr);
-
-        return;
-
-        _programMulti->initializeOpenGLFunctions();
-        _programMulti->loadFromPath(":/lightMulti.vsh",":/lightMulti.fsh");
-        _programMulti->bind();
-        _programMulti->setUniform3f("light.position", lightPosition);
-        _programMulti->setUniformMatrix4fv("projection", projectonMatPtr);
-
+        initTexture();
+        initProgramLight(lightPosition, projectonMatPtr);
+        initProgramTex(projectonMatPtr);
+        initProgramDir(lightPosition, projectonMatPtr);
+        initProgramPoint(lightPosition, projectonMatPtr);
+        initProgramSpot(lightPosition, projectonMatPtr);
+        initProgramMulti(projectonMatPtr);
     }
 
     void render() override {
@@ -164,8 +119,11 @@ public:
         glClearColor(0.1, 0.1, 0.1, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        _texDiffuse->active();
         _texDiffuse->bind();
+        _texSpecular->active();
         _texSpecular->bind();
+        _texEmission->active();
         _texEmission->bind();
 
         switch (type) {
@@ -186,6 +144,8 @@ public:
                 break;
         }
 
+        if (type == typeLightMulti) return;
+
         _vao->bind();
         _vao->draw();
 
@@ -193,7 +153,6 @@ public:
         _programLight->setUniform3f("materialColor", lightColor);
         _programLight->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
 
-        _vao->bind();
         _vao->draw();
     }
 
@@ -216,20 +175,99 @@ private:
     SFLShaderProgram *_programMulti;
     SFLShaderProgram *_programLight;
 
+    void initTexture(){
+        _texDiffuse->initializeOpenGLFunctions();
+        _texDiffuse->creat(GL_TEXTURE0);
+        _texDiffuse->loadTexture2DFromPath(":/container2.png");
+
+        _texSpecular->initializeOpenGLFunctions();
+        _texSpecular->creat(GL_TEXTURE1);
+        _texSpecular->loadTexture2DFromPath(":/container2_specular.png");
+
+        _texEmission->initializeOpenGLFunctions();
+        _texEmission->creat(GL_TEXTURE2);
+        _texEmission->loadTexture2DFromPath(":/magic.jpeg");
+    }
+
+    void initProgramLight(glm::vec3 &lightPosition, GLfloat *projectonMatPtr){
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPosition);
+        model = glm::scale(model, glm::vec3(0.2f));
+
+        _programLight->initializeOpenGLFunctions();
+        _programLight->loadFromPath(":/color.vsh",":/color.fsh");
+        _programLight->bind();
+        _programLight->setUniformMatrix4fv("projection", projectonMatPtr);
+        _programLight->setUniformMatrix4fv("model", glm::value_ptr(model));
+    }
+
+    void initProgramTex(GLfloat *projectonMatPtr){
+        _programTex->initializeOpenGLFunctions();
+        _programTex->loadFromPath(":/texture.vsh",":/texture.fsh");
+        _programTex->bind();
+        _programTex->setUniformMatrix4fv("projection", projectonMatPtr);
+        _programTex->setUniformMatrix4fv("model", glm::value_ptr(glm::mat4(1.0)));
+        _texDiffuse->bind();
+        _programTex->setUniform1i("material", 0);
+    }
+
+    void initProgramDir(glm::vec3 &lightPosition, GLfloat *projectonMatPtr){
+        _programDir->initializeOpenGLFunctions();
+        _programDir->loadFromPath(":/lightDir.vsh",":/lightDir.fsh");
+        _programDir->bind();
+        setBaseParam(_programDir, lightPosition, projectonMatPtr);
+        _programDir->setUniform3f("light.direction", -lightPosition);
+    }
+
+    void initProgramPoint(glm::vec3 &lightPosition, GLfloat *projectonMatPtr){
+        _programPoint->initializeOpenGLFunctions();
+        _programPoint->loadFromPath(":/lightPoint.vsh",":/lightPoint.fsh");
+        _programPoint->bind();
+        setBaseParam(_programPoint, lightPosition, projectonMatPtr);
+    }
+
+    void initProgramSpot(glm::vec3 &lightPosition, GLfloat *projectonMatPtr){
+        _programSpot->initializeOpenGLFunctions();
+        _programSpot->loadFromPath(":/lightSpot.vsh",":/lightSpot.fsh");
+        _programSpot->bind();
+        setBaseParam(_programSpot, lightPosition, projectonMatPtr);
+    }
+
     void setBaseParam(SFLShaderProgram *program, glm::vec3 &lightPosition, GLfloat *projectonMatPtr){
-        program->setUniform3f("light.position", lightPosition);
-        program->setUniformMatrix4fv("projection", projectonMatPtr);
-        program->setUniform1f("material.shininess", 32.0);
+        _texDiffuse->bind();
         program->setUniform1i("material.diffuse",  0);
+        _texSpecular->bind();
         program->setUniform1i("material.specular", 1);
+        _texEmission->bind();
         program->setUniform1i("material.emission", 2);
+        program->setUniform1f("material.shininess", 32.0);
+        program->setUniform3f("light.position", lightPosition);
+        program->setUniformMatrix4fv("model", glm::value_ptr(glm::mat4(1.0)));
+        program->setUniformMatrix4fv("projection", projectonMatPtr);
+    }
+
+    void initProgramMulti(GLfloat *projectonMatPtr){
+        _programMulti->initializeOpenGLFunctions();
+        _programMulti->loadFromPath(":/lightMulti.vsh",":/lightMulti.fsh");
+        _programMulti->bind();
+        _texDiffuse->bind();
+        _programMulti->setUniform1i("material.diffuse",  0);
+        _texSpecular->bind();
+        _programMulti->setUniform1i("material.specular", 1);
+        _texEmission->bind();
+        _programMulti->setUniform1i("material.emission", 2);
+        _programMulti->setUniform1f("material.shininess", 32.0);
+
+        _programMulti->setUniformMatrix4fv("projection", projectonMatPtr);
+
+        _programMulti->setUniform3f("lightDirect.direction", -0.2f, -1.0f, -0.3f);
+
+        _programMulti->setUniform1f("spotlight.wConstant", 1.0f);
+        _programMulti->setUniform1f("spotlight.wLinear",   0.09f);
+        _programMulti->setUniform1f("spotlight.wQuadratic",0.032f);
     }
 
     void setProgramTexture(){
         _programTex->bind();
-
-        glm::mat4 model(1.0);
-        _programTex->setUniformMatrix4fv("model", glm::value_ptr(model));
         _programTex->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
     }
 
@@ -240,10 +278,8 @@ private:
         _programDir->setUniform3f("light.specular",lightColor);
         _programDir->setUniform1f("material.emitIntensity", emissionIntensity);
 
-        glm::mat4 model(1.0);
-        _programDir->setUniformMatrix4fv("model", glm::value_ptr(model));
-        _programDir->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
         _programDir->setUniform3f("viewPos", _delegateCamaera->position);
+        _programDir->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
     }
 
     void setProgramPoint(){
@@ -253,10 +289,8 @@ private:
         _programPoint->setUniform3f("light.specular",lightColor);
         _programPoint->setUniform1f("material.emitIntensity", emissionIntensity);
 
-        glm::mat4 model(1.0);
-        _programPoint->setUniformMatrix4fv("model", glm::value_ptr(model));
-        _programPoint->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
         _programPoint->setUniform3f("viewPos", _delegateCamaera->position);
+        _programPoint->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
     }
 
     void setProgramSpot(){
@@ -264,20 +298,95 @@ private:
         _programSpot->setUniform3f("light.ambient", lightColor * float(0.2));
         _programSpot->setUniform3f("light.diffuse",lightColor * 0.5f);
         _programSpot->setUniform3f("light.specular",lightColor);
-        _programSpot->setUniform1f("light.radiusInner", cos(glm::radians(spotAngleInner)));
-        _programSpot->setUniform1f("light.radiusOuter", cos(glm::radians(spotAngleOuter)));
-        _programSpot->setUniform3f("light.direction", _delegateCamaera->axisFront);
-        _programSpot->setUniform3f("light.position", _delegateCamaera->position);
+
         _programSpot->setUniform1f("material.emitIntensity", emissionIntensity);
 
-        glm::mat4 model(1.0);
-        _programSpot->setUniformMatrix4fv("model", glm::value_ptr(model));
-        _programSpot->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        _programSpot->setUniform3f("light.position", _delegateCamaera->position);
+        _programSpot->setUniform3f("light.direction", _delegateCamaera->axisFront);
+
+        _programSpot->setUniform1f("light.radiusInner", cos(glm::radians(spotAngleInner)));
+        _programSpot->setUniform1f("light.radiusOuter", cos(glm::radians(spotAngleOuter)));
+
         _programSpot->setUniform3f("viewPos", _delegateCamaera->position);
+        _programSpot->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
     }
 
     void setProgramMulti(){
+        glm::vec3 pointLightPositions[] = {
+            glm::vec3( 0.7f,  0.2f,  2.0f),
+            glm::vec3( 2.3f, -3.3f, -4.0f),
+            glm::vec3(-4.0f,  2.0f, -12.0f),
+            glm::vec3( 0.0f,  0.0f, -3.0f)
+        };
+        glm::vec3 cubePositions[] = {
+            glm::vec3( 0.0f,  0.0f,  0.0f),
+            glm::vec3( 2.0f,  5.0f, -15.0f),
+            glm::vec3(-1.5f, -2.2f, -2.5f),
+            glm::vec3(-3.8f, -2.0f, -12.3f),
+            glm::vec3( 2.4f, -0.4f, -3.5f),
+            glm::vec3(-1.7f,  3.0f, -7.5f),
+            glm::vec3( 1.3f, -2.0f, -2.5f),
+            glm::vec3( 1.5f,  2.0f, -2.5f),
+            glm::vec3( 1.5f,  0.2f, -1.5f),
+            glm::vec3(-1.3f,  1.0f, -1.5f)
+        };
 
+        _programMulti->bind();
+        _programMulti->setUniform1f("material.emitIntensity", emissionIntensity);
+
+        // 1. 平行光
+        _programMulti->setUniform3f("lightDirect.ambient", lightColor * 0.05f);
+        _programMulti->setUniform3f("lightDirect.diffuse", lightColor * 0.4f);
+        _programMulti->setUniform3f("lightDirect.specular",lightColor * 0.5f);
+
+        // 2. 聚光灯
+        _programMulti->setUniform3f("spotlight.ambient", lightColor * 0.05f);
+        _programMulti->setUniform3f("spotlight.diffuse", lightColor * 0.8f);
+        _programMulti->setUniform3f("spotlight.specular",lightColor * 0.8f);
+
+        _programMulti->setUniform3f("spotlight.direction",_delegateCamaera->axisFront);
+        _programMulti->setUniform3f("spotlight.position", _delegateCamaera->position);
+
+        _programMulti->setUniform1f("spotlight.radiusOuter", cos(glm::radians(spotAngleOuter)));
+        _programMulti->setUniform1f("spotlight.radiusInner", cos(glm::radians(spotAngleInner)));
+
+        // 3. 点光源
+        for(int i = 0; i < 4; ++i) {
+            ostringstream fragmentAttrPrefix;
+            fragmentAttrPrefix << "pointLights[" << i <<"].";
+            string fragmentAttr = fragmentAttrPrefix.str();
+            _programMulti->setUniform3f((fragmentAttr + "ambient").c_str(), lightColor * 0.05f);
+            _programMulti->setUniform3f((fragmentAttr + "diffuse").c_str(), lightColor * 0.8f);
+            _programMulti->setUniform3f((fragmentAttr + "specular").c_str(),lightColor * 0.8f);
+            _programMulti->setUniform3f((fragmentAttr + "position").c_str(), pointLightPositions[i]);
+            // 点光源衰减
+            _programMulti->setUniform1f((fragmentAttr + "wConstant").c_str(), 1.0f);
+            _programMulti->setUniform1f((fragmentAttr + "wLinear").c_str(),   0.09f);
+            _programMulti->setUniform1f((fragmentAttr + "wQuadratic").c_str(),0.032f);
+        }
+
+        _vao->bind();
+        _programMulti->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+
+        // 4. 画箱子
+        for(int i = 0; i < 10; ++i) {
+            glm::mat4 model = glm::translate(glm::mat4(1.0), cubePositions[i]);
+            model = glm::rotate(model, 20.0f * i, glm::vec3(1.0f, 0.3f, 0.5f));
+            _programMulti->setUniformMatrix4fv("model", glm::value_ptr(model));
+            _vao->draw();
+        }
+
+        // 5. 画灯光
+        _programLight->bind();
+        _programLight->setUniform3f("materialColor", lightColor);
+        _programLight->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+
+        for(int i = 0; i < 4; ++i) {
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), pointLightPositions[i]);
+            model = glm::scale(model, glm::vec3(0.2f));
+            _programLight->setUniformMatrix4fv("model", glm::value_ptr(model));
+            _vao->draw();
+        }
     }
 };
 

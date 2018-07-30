@@ -32,17 +32,22 @@ public:
         _texID = texID;
     }
 
-    void bind(){
+    void active(){
         if (!_texRef) return;
 
         glActiveTexture(_texID);
+    }
+
+    void bind(){
+        if (!_texRef) return;
+
         glBindTexture(GL_TEXTURE_2D, _texRef);
     }
+
     void unBind(){
         if (!_texRef) return;
 
-        glActiveTexture(0);
-        glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     void setWrap(GLint s = GL_CLAMP_TO_EDGE, GLint t = GL_CLAMP_TO_EDGE){
@@ -76,7 +81,7 @@ public:
         } else {
             setFilter();
         }
-
+        unBind();
     }
 
 private:
