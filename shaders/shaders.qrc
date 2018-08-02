@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+        <file>color.fsh</file>
+        <file>color.vsh</file>
+        <file>colorLight.fsh</file>
+        <file>lightDir.fsh</file>
+        <file>lightDir.vsh</file>
+        <file>lightGouraud.fsh</file>
+        <file>lightGouraud.vsh</file>
+        <file>lightMulti.fsh</file>
+        <file>lightMulti.vsh</file>
+        <file>lightPhong.fsh</file>
+        <file>lightPhong.vsh</file>
+        <file>lightPoint.fsh</file>
+        <file>lightPoint.vsh</file>
+        <file>lightSpot.fsh</file>
+        <file>lightSpot.vsh</file>
+        <file>texture.fsh</file>
+        <file>texture.vsh</file>
+    </qresource>
+</RCC>

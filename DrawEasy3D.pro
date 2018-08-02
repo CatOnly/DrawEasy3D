@@ -25,6 +25,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #   CONFIG += precompile_header
 #   PRECOMPILED_HEADER = common/SFLDefine.h
 INCLUDEPATH += $$PWD/library/glm
+INCLUDEPATH += $$PWD/library/assimp/include
+
+macx {
+    DISTFILES += \
+        library/zlib/libzlibstatic.a \
+        library/assimp/libassimp.3.3.1.dylib
+
+    LIBS += -L$$PWD/library/assimp/ -lassimp.3.3.1
+    LIBS += -L$$PWD/library/zlib/ -lzlibstatic
+}
 
 SOURCES += \
         main.cpp \
@@ -67,7 +77,9 @@ HEADERS += \
     models/SFLModelLoadModel.h \
     views/SFLViewLoadModel.h \
     models/SFLModelPostprocessing.h \
-    views/SFLViewPostprocessing.h
+    views/SFLViewPostprocessing.h \
+    renders/SFLMesh.h \
+    renders/SFLModel.h
 
 HEADERS += \
     library/glm/detail/_features.hpp \
@@ -214,7 +226,10 @@ HEADERS += \
     library/glm/vec2.hpp \
     library/glm/vec3.hpp \
     library/glm/vec4.hpp \
-    library/glm/vector_relational.hpp
+    library/glm/vector_relational.hpp \
+    library/assimp/include/*.hpp \
+    library/assimp/include/*.h
 
 RESOURCES += \
-    assets/assetInfo.qrc
+    assets/assetInfo.qrc \
+    shaders/shaders.qrc

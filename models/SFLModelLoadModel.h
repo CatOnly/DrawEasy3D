@@ -12,9 +12,7 @@ public:
         _view = new SFLViewLoadModel(this);
     }
     ~SFLModelLoadModel(){
-        if (_hasInitialized){
 
-        }
     }
 
     void initializeOpenGL() override {
