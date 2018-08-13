@@ -3,6 +3,8 @@
 
 #include "../common/SFLViewAbstract.h"
 
+class QLabel;
+class QPushButton;
 class SFLViewLoadModel:public SFLViewAbstract
 {
 public:
@@ -10,8 +12,12 @@ public:
     ~SFLViewLoadModel();
 
     void changeViewBy(int index) override;
+    void loadModel();
 
 protected:
+    QLabel *_labelModel;
+    QPushButton *_loadModelBtn;
+
     void setupUI() override;
     void initData() override;
 };

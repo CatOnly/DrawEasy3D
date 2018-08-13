@@ -2,6 +2,7 @@
 #define SFLMESH_H
 
 #include "SFLShaderProgram.h"
+#include <assimp/types.h>
 #include <string>
 #include <glm.hpp>
 #include <gltypes.h>
@@ -21,13 +22,15 @@ namespace SFL {
     struct Texture{
         GLuint id;
         TextureType type;
+        aiString idPath;
     };
 }
 
+using namespace std;
+using namespace SFL;
 
 class SFLMesh: public QOpenGLFunctions {
-    using namespace std;
-    using namespace SFL;
+
 
 public:
     vector<GLuint> indices;
@@ -57,8 +60,8 @@ public:
 
     void draw(SFLShaderProgram &shaderProgram){
         map<TextureType, string> nameMap = {
-            make_pair(TextureType::TexDiffuse, "texDiffuse"),
-            make_pair(TextureType::TexSpecular,"texSpecular")
+            make_pair(TextureType::TexDiffuse, "diffuse"),
+            make_pair(TextureType::TexSpecular,"specular")
         };
 
         GLuint countTexDiffuse = 0;
@@ -79,7 +82,7 @@ public:
         glActiveTexture(GL_TEXTURE0);
 
         glBindVertexArray(_vertexArrayObj);
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNALED_INT, 0);
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
     }
 

@@ -25,7 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #   CONFIG += precompile_header
 #   PRECOMPILED_HEADER = common/SFLDefine.h
 INCLUDEPATH += $$PWD/library/glm
-INCLUDEPATH += $$PWD/library/assimp/include
+INCLUDEPATH += $$PWD/library/
 
 macx {
     DISTFILES += \
@@ -227,8 +227,10 @@ HEADERS += \
     library/glm/vec3.hpp \
     library/glm/vec4.hpp \
     library/glm/vector_relational.hpp \
-    library/assimp/include/*.hpp \
-    library/assimp/include/*.h
+    library/assimp/*.hpp \
+    library/assimp/*.inl \
+    library/assimp/*.h \
+    library/assimp/Compiler/*.h
 
 RESOURCES += \
     assets/assetInfo.qrc \
