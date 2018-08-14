@@ -1,10 +1,10 @@
-#ifndef VEC4_H
-#define VEC4_H
-#include "base.h"
+#ifndef SFL_VEC4_H
+#define SFL_VEC4_H
+#include "vec3.h"
 
 #define V4_OPERATOR_LAST(symbol) \
-vec4 operator symbol (int){\
-    vec4 tmp(*this);\
+SFLVec4 operator symbol (int){\
+    SFLVec4 tmp(*this);\
     symbol x;\
     symbol y;\
     symbol z;\
@@ -13,7 +13,7 @@ vec4 operator symbol (int){\
     return tmp;\
 }
 #define V4_OPERATOR_FIRST(symbol) \
-vec4& operator symbol (){\
+SFLVec4& operator symbol (){\
     symbol x;\
     symbol y;\
     symbol z;\
@@ -23,11 +23,11 @@ vec4& operator symbol (){\
 }
 
 #define V4_OPERATOR_BASE(symbol) \
-vec4 operator symbol (const vec4 &a){\
-    return vec4(x symbol a.x, y symbol a.y, z symbol a.z, w symbol a.w);\
+SFLVec4 operator symbol (const SFLVec4 &a){\
+    return SFLVec4(x symbol a.x, y symbol a.y, z symbol a.z, w symbol a.w);\
 }
 #define V4_OPERATOR(symbol) \
-vec4& operator symbol (const vec4 &a){\
+SFLVec4& operator symbol (const SFLVec4 &a){\
     x symbol a.x;\
     y symbol a.y;\
     z symbol a.z;\
@@ -37,7 +37,8 @@ vec4& operator symbol (const vec4 &a){\
 }
 
 namespace SFL {
-    class vec4
+
+    template <typename T> class sfl_vec4
     {
     public:
         union { float x, r, s; };
@@ -45,11 +46,14 @@ namespace SFL {
         union { float z, b, p; };
         union { float w, a, q; };
 
-        vec4(float x, float y, float z, float w):x(x),y(y),z(z),w(w){}
-        vec4(float x = 0.0f):vec4(x,x,x,x){}
-        vec4(const vec4 &vec):vec4(vec.x, vec.y, vec.z, vec.w){}
+        typedef sfl_vec4<T> SFLVec4;
 
-        VEC_OPERATOR_SQUARE(4)
+        sfl_vec4(float x, float y, float z, float w):x(static_cast<T>(x)),y(static_cast<T>(y)),z(static_cast<T>(z)),w(static_cast<T>(w)){}
+        sfl_vec4(float x = 0.0f):sfl_vec4(static_cast<T>(x),static_cast<T>(x),static_cast<T>(x),static_cast<T>(x)){}
+        sfl_vec4(const SFLVec4 &vec):sfl_vec4(vec.x, vec.y, vec.z, vec.w){}
+        sfl_vec4(const sfl_vec3<T> &vec):sfl_vec4(vec.x, vec.y, vec.z, 0.0f){}
+
+        VEC_OPERATOR_INDEX(4)
 
         V4_OPERATOR_LAST(++)
         V4_OPERATOR_LAST(--)
@@ -66,10 +70,14 @@ namespace SFL {
         V4_OPERATOR(*=)
         V4_OPERATOR(/=)
 
-        float dot(vec4 &a){
+        T dot(const SFLVec4 &a) const {
             return x * a.x + y * a.y + z * a.z + w * a.w;
+        }
+
+        T length() const {
+            return static_cast<T>(sqrt(x*x +  y*y + z*z));
         }
     };
 }
 
-#endif // VEC4_H
+#endif // SFL_VEC4_H

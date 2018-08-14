@@ -1,11 +1,23 @@
-#ifndef VEC3_H
-#define VEC3_H
+#ifndef SFL_VEC3_H
+#define SFL_VEC3_H
 
-#include "base.h"
+#include <cstddef>
+#include <cassert>
+#include <math.h>
+
+#define VEC_OPERATOR_INDEX(size) \
+float & operator[](int i) {\
+    assert(i >= 0 && i < size);\
+    return (&x)[i];\
+}\
+float const& operator[](int i) const {\
+    assert(i >= 0 && i < size);\
+    return (&x)[i];\
+}
 
 #define V3_OPERATOR_LAST(symbol) \
-vec3 operator symbol (int){\
-    vec3 tmp(*this);\
+SFLVec3 operator symbol (int){\
+    SFLVec3 tmp(*this);\
     symbol x;\
     symbol y;\
     symbol z;\
@@ -13,7 +25,7 @@ vec3 operator symbol (int){\
     return tmp;\
 }
 #define V3_OPERATOR_FIRST(symbol) \
-vec3& operator symbol (){\
+SFLVec3& operator symbol (){\
     symbol x;\
     symbol y;\
     symbol z;\
@@ -22,11 +34,11 @@ vec3& operator symbol (){\
 }
 
 #define V3_OPERATOR_BASE(symbol) \
-vec3 operator symbol (const vec3 &a){\
-    return vec3(x symbol a.x, y symbol a.y, z symbol a.z);\
+SFLVec3 operator symbol (const SFLVec3 &a){\
+    return sfl_vec3(x symbol a.x, y symbol a.y, z symbol a.z);\
 }
 #define V3_OPERATOR(symbol) \
-vec3& operator symbol (const vec3 &a){\
+SFLVec3& operator symbol (const SFLVec3 &a){\
     x symbol a.x;\
     y symbol a.y;\
     z symbol a.z;\
@@ -34,32 +46,22 @@ vec3& operator symbol (const vec3 &a){\
     return *this;\
 }
 
-#define V3_OPERATOR_FLOAT_BASE(symbol) \
-vec3 operator symbol (const float &a){\
-    return vec3(x symbol a, y symbol a, z symbol a);\
-}
-#define V3_OPERATOR_FLOAT(symbol) \
-vec3& operator symbol (const float &a){\
-    x symbol a;\
-    y symbol a;\
-    z symbol a;\
-\
-    return *this;\
-}
-
 namespace SFL {
-    class vec3
+
+    template <typename T> class sfl_vec3
     {
     public:
-        union { float x, r, s;};
-        union { float y, g, t;};
-        union { float z, b, p;};
+        union { T x, r, s;};
+        union { T y, g, t;};
+        union { T z, b, p;};
 
-        vec3(float x, float y, float z):x(x),y(y),z(z){}
-        vec3(float x = 0.0f):vec3(x, x, x){}
-        vec3(const vec3 &vec):vec3(vec.x, vec.y, vec.z){}
+        typedef sfl_vec3<T> SFLVec3;
 
-        VEC_OPERATOR_SQUARE(3)
+        sfl_vec3(T x, T y, T z):x(static_cast<T>(x)),y(static_cast<T>(y)),z(static_cast<T>(z)){}
+        sfl_vec3(T x = 0.0f):sfl_vec3(static_cast<T>(x), static_cast<T>(x), static_cast<T>(x)){}
+        sfl_vec3(const SFLVec3 &vec):sfl_vec3(vec.x, vec.y, vec.z){}
+
+        VEC_OPERATOR_INDEX(3)
 
         V3_OPERATOR_LAST(++)
         V3_OPERATOR_LAST(--)
@@ -76,17 +78,22 @@ namespace SFL {
         V3_OPERATOR(*=)
         V3_OPERATOR(/=)
 
-        float dot(vec3 &right){
-            return x * right.x + y * right.y + z * right.z;
+        T dot(const SFLVec3 &vector) const {
+            return x * vector.x + y * vector.y + z * vector.z;
         }
-        vec3 cross(vec3 &right){
-            return vec3(
-                y * right.z - z * right.y,
-                z * right.x - x * right.z,
-                x * right.y - y * right.x
+
+        SFLVec3 cross(const SFLVec3 &vector) const {
+            return SFLVec3(
+                y * vector.z - z * vector.y,
+                z * vector.x - x * vector.z,
+                x * vector.y - y * vector.x
             );
+        }
+
+        T length() const {
+            return static_cast<T>(sqrt(x*x + y*y + z*z));
         }
     };
 }
 
-#endif // VEC3_H
+#endif // SFL_VEC3_H

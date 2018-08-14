@@ -31,9 +31,9 @@ SFLToolBar::~SFLToolBar(){
 
 void SFLToolBar::initData()
 {
-//    _renderObjects->push_back(new SFLModelNoLight());
-//    _renderObjects->push_back(new SFLModelLight());
-//    _renderObjects->push_back(new SFLModelMapping());
+    _renderObjects->push_back(new SFLModelNoLight());
+    _renderObjects->push_back(new SFLModelLight());
+    _renderObjects->push_back(new SFLModelMapping());
     _renderObjects->push_back(new SFLModelLoadModel());
 //    _renderObjects->push_back(new SFLModelPostprocessing());
 }

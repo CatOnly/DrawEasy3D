@@ -5,6 +5,7 @@
 #include "../views/SFLViewLight.h"
 #include "../renders/SFLShaderProgram.h"
 #include "../renders/SFLVertexArray.h"
+#include "../math/SGLMath.h"
 
 class SFLModelLight: public SFLModelAbstract
 {
@@ -37,6 +38,27 @@ public:
         materialAmbient = glm::vec3(1.0, 0.5, 0.3);
         materialDiffuse = glm::vec3(1.0, 0.5, 0.3);
         materialSpecular = glm::vec3(0.5);
+
+        glm::mat3 m;
+        printf("mat3: %.1f %.1f %.1f\n", m[0][0], m[1][1], m[2][2]);
+
+        SFL::vec4 a(1.0);
+        SFL::vec4 b(2.0);
+        SFL::vec4 c;
+
+        c++;
+        --c;
+        c = c + 1.0f;
+        c = 1.0f - c;
+        c += a;
+        c += 1.0f;
+        SFL::print(c);
+
+        SFL::mat3 m1(3,2,1, 1,1,2, 1,2,3);
+        SFL::mat3 m2(14.0,5.0,6.0);
+        SFL::mat3 m3 = 0.4f * m2 * 2.0f;
+
+        SFL::print(m2);
     }
     ~SFLModelLight() {
         DELETE_SAFE(_vao)

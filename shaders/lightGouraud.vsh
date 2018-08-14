@@ -31,6 +31,7 @@ uniform mat4 projection;
 uniform mat4 model;
 
 // 高氏着色 = 环境光 + 漫反射 + 点光源，在顶点着色器做
+// 能在顶点中用的计算大部分也能放在 CPU 中计算效率更高
 void main()
 {
     vec3 Normal = mat3(transpose(inverse(model))) * normal;

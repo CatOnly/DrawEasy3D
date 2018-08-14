@@ -50,7 +50,8 @@ SOURCES += \
     common/SFLVec1Editor.cpp \
     views/SFLViewMapping.cpp \
     views/SFLViewLoadModel.cpp \
-    views/SFLViewPostprocessing.cpp
+    views/SFLViewPostprocessing.cpp \
+    math/SGLMath.cpp
 
 HEADERS += \
         MainWindow.h \
@@ -79,7 +80,12 @@ HEADERS += \
     models/SFLModelPostprocessing.h \
     views/SFLViewPostprocessing.h \
     renders/SFLMesh.h \
-    renders/SFLModel.h
+    renders/SFLModel.h \
+    math/vec3.h \
+    math/vec4.h \
+    math/SGLMath.h \
+    math/mat3x3.h \
+    math/mat4x4.h
 
 HEADERS += \
     library/glm/detail/_features.hpp \
