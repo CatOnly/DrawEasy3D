@@ -80,6 +80,10 @@ public:
         glUniform1f(glGetUniformLocation(_programID, nameAttr), x);
     }
 
+    void setUniform2f(const char* nameAttr, GLfloat x, GLfloat y){
+        glUniform2f(glGetUniformLocation(_programID, nameAttr), x, y);
+    }
+
     void setUniform3f(const char* nameAttr, GLfloat x, GLfloat y, GLfloat z){
         glUniform3f(glGetUniformLocation(_programID, nameAttr), x, y, z);
     }

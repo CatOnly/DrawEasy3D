@@ -30,10 +30,12 @@ INCLUDEPATH += $$PWD/library/
 macx {
     DISTFILES += \
         library/zlib/libzlibstatic.a \
-        library/assimp/libassimp.3.3.1.dylib
+        library/assimp/libassimp.3.3.1.dylib\
+        library/sfl/libFaceBeautify.a
 
-    LIBS += -L$$PWD/library/assimp/ -lassimp.3.3.1
     LIBS += -L$$PWD/library/zlib/ -lzlibstatic
+    LIBS += -L$$PWD/library/assimp/ -lassimp.3.3.1
+    LIBS += -L$$PWD/library/sfl/ -lFaceBeautify
 }
 
 SOURCES += \
@@ -85,7 +87,8 @@ HEADERS += \
     math/vec4.h \
     math/SGLMath.h \
     math/mat3x3.h \
-    math/mat4x4.h
+    math/mat4x4.h \
+    library/sfl/FaceBeautify.h
 
 HEADERS += \
     library/glm/detail/_features.hpp \

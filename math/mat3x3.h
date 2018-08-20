@@ -84,6 +84,7 @@ namespace SFL {
         sfl_mat3(const T x, const T y, const T z):sfl_mat3(x, 0.0f, 0.0f,
                                                            0.0f, y, 0.0f,
                                                            0.0f, 0.0f, z){}
+        explicit sfl_mat3(const sfl_vec3<T> &vector3):sfl_mat3(vector3.x, vector3.y, vector3.z){}
         explicit sfl_mat3(const T value = 1.0f):sfl_mat3(value, value, value){}
 
         MAT_OPERATOR_INDEX(3)

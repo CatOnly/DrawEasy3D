@@ -2,7 +2,7 @@
 
 # DrawEasy3D
 
-> Current version only supports OS X or macOS
+> Current version only supports on OS X or macOS
 
 - A demo code to show how to draw 3D Graphics by OpenGL
 - Using QT to build UI 

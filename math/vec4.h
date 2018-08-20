@@ -41,15 +41,15 @@ namespace SFL {
     template <typename T> class sfl_vec4
     {
     public:
-        union { float x, r, s; };
-        union { float y, g, t; };
-        union { float z, b, p; };
-        union { float w, a, q; };
+        union { T x, r, s; };
+        union { T y, g, t; };
+        union { T z, b, p; };
+        union { T w, a, q; };
 
         typedef sfl_vec4<T> SFLVec4;
 
-        sfl_vec4(float x, float y, float z, float w):x(static_cast<T>(x)),y(static_cast<T>(y)),z(static_cast<T>(z)),w(static_cast<T>(w)){}
-        sfl_vec4(float x = 0.0f):sfl_vec4(static_cast<T>(x),static_cast<T>(x),static_cast<T>(x),static_cast<T>(x)){}
+        sfl_vec4(T x, T y, T z, T w):x(static_cast<T>(x)),y(static_cast<T>(y)),z(static_cast<T>(z)),w(static_cast<T>(w)){}
+        sfl_vec4(T x = 0.0f):sfl_vec4(static_cast<T>(x),static_cast<T>(x),static_cast<T>(x),static_cast<T>(x)){}
         sfl_vec4(const SFLVec4 &vec):sfl_vec4(vec.x, vec.y, vec.z, vec.w){}
         sfl_vec4(const sfl_vec3<T> &vec):sfl_vec4(vec.x, vec.y, vec.z, 0.0f){}
 

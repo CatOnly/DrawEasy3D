@@ -45,12 +45,14 @@ namespace SFL {
             _column[2] = SFLVec4(z1, z2, z3, z4);
             _column[3] = SFLVec4(w1, w2, w3, w4);
         }
-        explicit sfl_mat4(const T value = 1.0f):sfl_mat4(
-                                                    value, 0.0f, 0.0f, 0.0f,
-                                                    0.0f, value, 0.0f, 0.0f,
-                                                    0.0f, 0.0f, value, 0.0f,
-                                                    0.0f, 0.0f, 0.0f,  1.0f
-                                                ){}
+        sfl_mat4(const T x, const T y, const T z, const T w):sfl_mat4(
+                                                                 x, 0.0f, 0.0f, 0.0f,
+                                                                 0.0f, y, 0.0f, 0.0f,
+                                                                 0.0f, 0.0f, z, 0.0f,
+                                                                 0.0f, 0.0f, 0.0f, w){}
+        explicit sfl_mat4(const SFLVec4 &vector4):sfl_mat4(vector4.x, vector4.y, vector4.z, vector4.w){}
+        explicit sfl_mat4(const T value = 1.0f):sfl_mat4(value, value, value, value){}
+
         MAT_OPERATOR_INDEX(4)
 
         MAT_OPERATOR_BASE(4, +)
