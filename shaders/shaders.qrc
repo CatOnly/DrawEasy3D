@@ -17,5 +17,7 @@
         <file>lightSpot.vsh</file>
         <file>texture.fsh</file>
         <file>texture.vsh</file>
+        <file>processEdge.fsh</file>
+        <file>processEdge.vsh</file>
     </qresource>
 </RCC>
