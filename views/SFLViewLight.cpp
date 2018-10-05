@@ -122,56 +122,56 @@ void SFLViewLight::setIsRotateModel(int index)
 void SFLViewLight::setLightColor(double r, double g, double b)
 {
     SFLModelLight *model = static_cast<SFLModelLight *>(_owner);
-    model->lightColor = glm::vec3(r, g, b);
+    model->lightColor = gm::vec3(r, g, b);
 
     emit needRender();
 }
 void SFLViewLight::setLightAmbient(double r, double g, double b)
 {
     SFLModelLight *model = static_cast<SFLModelLight *>(_owner);
-    model->lightAmbient = glm::vec3(r, g, b);
+    model->lightAmbient = gm::vec3(r, g, b);
 
     emit needRender();
 }
 void SFLViewLight::setLightDiffuse(double r, double g, double b)
 {
     SFLModelLight *model = static_cast<SFLModelLight *>(_owner);
-    model->lightDiffuse = glm::vec3(r, g, b);
+    model->lightDiffuse = gm::vec3(r, g, b);
 
     emit needRender();
 }
 void SFLViewLight::setLightSpecular(double r, double g, double b)
 {
     SFLModelLight *model = static_cast<SFLModelLight *>(_owner);
-    model->lightSpecular = glm::vec3(r, g, b);
+    model->lightSpecular = gm::vec3(r, g, b);
 
     emit needRender();
 }
 void SFLViewLight::setMaterialColor(double r, double g, double b)
 {
     SFLModelLight *model = static_cast<SFLModelLight *>(_owner);
-    model->materialColor = glm::vec3(r, g, b);
+    model->materialColor = gm::vec3(r, g, b);
 
     emit needRender();
 }
 void SFLViewLight::setMaterialAmbient(double r, double g, double b)
 {
     SFLModelLight *model = static_cast<SFLModelLight *>(_owner);
-    model->materialAmbient = glm::vec3(r, g, b);
+    model->materialAmbient = gm::vec3(r, g, b);
 
     emit needRender();
 }
 void SFLViewLight::setMaterialDiffuse(double r, double g, double b)
 {
     SFLModelLight *model = static_cast<SFLModelLight *>(_owner);
-    model->materialDiffuse = glm::vec3(r, g, b);
+    model->materialDiffuse = gm::vec3(r, g, b);
 
     emit needRender();
 }
 void SFLViewLight::setMaterialSpecular(double r, double g, double b)
 {
     SFLModelLight *model = static_cast<SFLModelLight *>(_owner);
-    model->materialSpecular = glm::vec3(r, g, b);
+    model->materialSpecular = gm::vec3(r, g, b);
 
     emit needRender();
 }

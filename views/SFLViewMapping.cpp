@@ -114,7 +114,7 @@ void SFLViewMapping::changeViewBy(int index)
 void SFLViewMapping::setLightColor(double r, double g, double b)
 {
     SFLModelMapping *model = static_cast<SFLModelMapping *>(_owner);
-    model->lightColor = glm::vec3(r, g, b);
+    model->lightColor = gm::vec3(r, g, b);
 
     emit needRender();
 }

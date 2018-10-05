@@ -14,9 +14,9 @@ public:
     SFLModelNoLight():SFLModelAbstract(){
         _btn->setText("基本操作");
         _view = new SFLViewNoLight(this);
-        _rotateAngle = glm::vec3(0.0, 0.0, 0.0);
-        _scale = glm::vec3(1.0, 1.0, 1.0);
-        _move = glm::vec3(0.0, 0.0, 0.0);
+        _rotateAngle = gm::vec3(0.0, 0.0, 0.0);
+        _scale = gm::vec3(1.0, 1.0, 1.0);
+        _move = gm::vec3(0.0, 0.0, 0.0);
 
         setHasTexture(false);
         setHasRightDirection(false);
@@ -58,14 +58,14 @@ public:
         glUniform1f(glGetUniformLocation(_programID, "hasRightDir"), _hasRightDirection ? 1.0f : 0.0f);
         glUniform1f(glGetUniformLocation(_programID, "colorWeight"), _mixColorWeight);
 
-        glm::mat4 transform(1.0);
-        transform = glm::rotate(transform, _rotateAngle.x, glm::vec3(1.0, 0.0, 0.0));
-        transform = glm::rotate(transform, _rotateAngle.y, glm::vec3(0.0, 1.0, 0.0));
-        transform = glm::rotate(transform, _rotateAngle.z, glm::vec3(0.0, 0.0, 1.0));
-        transform = glm::scale(transform, _scale);
-        transform = glm::translate(transform, _move);
-        transform = glm::perspective(glm::radians(_viewAngle), 1.0f, _viewFront, _viewFarther) * _delegateCamaera->viewMatrix() * transform;
-        glUniformMatrix4fv(glGetUniformLocation(_programID, "transform"), 1, GL_FALSE, glm::value_ptr(transform));
+        gm::mat4 transform(1.0);
+        transform = gm::rotate(transform, _rotateAngle.x, gm::vec3(1.0, 0.0, 0.0));
+        transform = gm::rotate(transform, _rotateAngle.y, gm::vec3(0.0, 1.0, 0.0));
+        transform = gm::rotate(transform, _rotateAngle.z, gm::vec3(0.0, 0.0, 1.0));
+        transform = gm::scale(transform, _scale);
+        transform = gm::translate(transform, _move);
+        transform = gm::perspective(_viewAngle, 1.0f, _viewFront, _viewFarther) * _delegateCamaera->viewMatrix() * transform;
+        glUniformMatrix4fv(glGetUniformLocation(_programID, "transform"), 1, GL_FALSE, gm::valuePtrFrom(transform));
 
         if (_hasTexture){
             glActiveTexture(GL_TEXTURE0);
@@ -81,13 +81,13 @@ public:
     }
 
     void setRotate(double x, double y, double z){
-        _rotateAngle = glm::vec3((float)x, (float)y, (float)z);
+        _rotateAngle = gm::vec3((float)x, (float)y, (float)z);
     }
     void setScale(double x, double y, double z){
-        _scale = glm::vec3((float)x, (float)y, (float)z);
+        _scale = gm::vec3((float)x, (float)y, (float)z);
     }
     void setMove(double x, double y, double z){
-        _move = glm::vec3((float)x, (float)y, (float)z);
+        _move = gm::vec3((float)x, (float)y, (float)z);
     }
 
     void setHasTexture(bool hasTexture){
@@ -120,9 +120,9 @@ private:
     bool _hasTexture;
     bool _hasRightDirection;
     float _mixColorWeight = 0.4;
-    glm::vec3 _rotateAngle;
-    glm::vec3 _scale;
-    glm::vec3 _move;
+    gm::vec3 _rotateAngle;
+    gm::vec3 _scale;
+    gm::vec3 _move;
     GLfloat _viewAngle = 45.0;
     GLfloat _viewFront = 0.1;
     GLfloat _viewFarther = 100.0;

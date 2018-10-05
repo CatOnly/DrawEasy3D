@@ -27,18 +27,18 @@ public:
 
         type = typeColor;
         isRotateLight = false;
-        lightColor = glm::vec3(1.0);
-        lightAmbient = glm::vec3(0.2);
-        lightDiffuse = glm::vec3(0.5);
-        lightSpecular = glm::vec3(1.0);
+        lightColor = gm::vec3(1.0);
+        lightAmbient = gm::vec3(0.2);
+        lightDiffuse = gm::vec3(0.5);
+        lightSpecular = gm::vec3(1.0);
 
         isRotateModel = false;
-        materialColor = glm::vec3(1.0, 0.5, 0.3);
-        materialAmbient = glm::vec3(1.0, 0.5, 0.3);
-        materialDiffuse = glm::vec3(1.0, 0.5, 0.3);
-        materialSpecular = glm::vec3(0.5);
+        materialColor = gm::vec3(1.0, 0.5, 0.3);
+        materialAmbient = gm::vec3(1.0, 0.5, 0.3);
+        materialDiffuse = gm::vec3(1.0, 0.5, 0.3);
+        materialSpecular = gm::vec3(0.5);
 
-        glm::mat3 m;
+        gm::mat3 m;
         printf("mat3: %.1f %.1f %.1f\n", m[0][0], m[1][1], m[2][2]);
     }
 
@@ -99,27 +99,27 @@ public:
         _vao->bind();
         _vao->setData(vertices, 6 * 6 * 6, 36, {3,3});
 
-        glm::mat4 projection = glm::perspective(45.0, 1.0, 0.1, 100.0);
+        gm::mat4 projection = gm::perspective(45.0f, 1.0f, 0.1f, 100.0f);
 
         _programColor->initializeOpenGLFunctions();
         _programColor->loadFromPath(":/color.vsh",":/color.fsh");
         _programColor->bind();
-        _programColor->setUniformMatrix4fv("projection", glm::value_ptr(projection));
+        _programColor->setUniformMatrix4fv("projection", gm::valuePtrFrom(projection));
 
         _programLight->initializeOpenGLFunctions();
         _programLight->loadFromPath(":/color.vsh",":/colorLight.fsh");
         _programLight->bind();
-        _programLight->setUniformMatrix4fv("projection", glm::value_ptr(projection));
+        _programLight->setUniformMatrix4fv("projection", gm::valuePtrFrom(projection));
 
         _programModelGouraud->initializeOpenGLFunctions();
         _programModelGouraud->loadFromPath(":/lightGouraud.vsh",":/lightGouraud.fsh");
         _programModelGouraud->bind();
-        _programModelGouraud->setUniformMatrix4fv("projection", glm::value_ptr(projection));
+        _programModelGouraud->setUniformMatrix4fv("projection", gm::valuePtrFrom(projection));
 
         _programModelPhone->initializeOpenGLFunctions();
         _programModelPhone->loadFromPath(":/lightPhong.vsh", ":/lightPhong.fsh");
         _programModelPhone->bind();
-        _programModelPhone->setUniformMatrix4fv("projection", glm::value_ptr(projection));
+        _programModelPhone->setUniformMatrix4fv("projection", gm::valuePtrFrom(projection));
     }
 
     void render() override {
@@ -128,7 +128,7 @@ public:
         glClearColor(0.1, 0.1, 0.1, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::vec3 lightPosition(1.0, 0.3, 2.0);
+        gm::vec3 lightPosition(1.0, 0.3, 2.0);
 
         switch(type){
         case typeColor:
@@ -146,11 +146,11 @@ public:
         }
 
         _programColor->bind();
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPosition);
-        model = glm::scale(model, glm::vec3(0.2f));
+        gm::mat4 model = gm::translate(gm::mat4(1.0f), lightPosition);
+        model = gm::scale(model, gm::vec3(0.2f));
         _programColor->setUniform3f("materialColor", lightColor);
-        _programColor->setUniformMatrix4fv("model", glm::value_ptr(model));
-        _programColor->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        _programColor->setUniformMatrix4fv("model", gm::valuePtrFrom(model));
+        _programColor->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
 
         _vao->bind();
         _vao->draw();
@@ -160,15 +160,15 @@ public:
 
     bool isRotateLight;
     bool isRotateModel;
-    glm::vec3 lightColor;
-    glm::vec3 lightAmbient;
-    glm::vec3 lightDiffuse;
-    glm::vec3 lightSpecular;
+    gm::vec3 lightColor;
+    gm::vec3 lightAmbient;
+    gm::vec3 lightDiffuse;
+    gm::vec3 lightSpecular;
 
-    glm::vec3 materialColor;
-    glm::vec3 materialAmbient;
-    glm::vec3 materialDiffuse;
-    glm::vec3 materialSpecular;
+    gm::vec3 materialColor;
+    gm::vec3 materialAmbient;
+    gm::vec3 materialDiffuse;
+    gm::vec3 materialSpecular;
     float materialShininess;
 
 protected:
@@ -182,9 +182,9 @@ protected:
         _programColor->bind();
         _programColor->setUniform3f("materialColor", materialColor);
 
-        glm::mat4 model(1.0);
-        _programColor->setUniformMatrix4fv("model", glm::value_ptr(model));
-        _programColor->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        gm::mat4 model(1.0);
+        _programColor->setUniformMatrix4fv("model", gm::valuePtrFrom(model));
+        _programColor->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
 
         _vao->bind();
         _vao->draw();
@@ -194,14 +194,14 @@ protected:
         _programLight->setUniform3f("lightColor", lightColor);
         _programLight->setUniform3f("materialColor", materialColor);
 
-        glm::mat4 model(1.0);
-        _programLight->setUniformMatrix4fv("model", glm::value_ptr(model));
-        _programLight->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        gm::mat4 model(1.0);
+        _programLight->setUniformMatrix4fv("model", gm::valuePtrFrom(model));
+        _programLight->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
 
         _vao->bind();
         _vao->draw();
     }
-    void renderModel(SFLShaderProgram *program, glm::vec3 &lightPosition){
+    void renderModel(SFLShaderProgram *program, gm::vec3 &lightPosition){
         program->bind();
 
         GLfloat radius = 2.0;
@@ -222,12 +222,12 @@ protected:
 
         program->setUniform3f("viewPos", _delegateCamaera->position);
 
-        glm::mat4 model(1.0);
+        gm::mat4 model(1.0);
         if (isRotateModel){
-            model = glm::rotate(model, _times * speed, glm::vec3(1.0f, 0.3f, 0.5f));
+            model = gm::rotate(model, _times * speed, gm::vec3(1.0f, 0.3f, 0.5f));
         }
-        program->setUniformMatrix4fv("model", glm::value_ptr(model));
-        program->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        program->setUniformMatrix4fv("model", gm::valuePtrFrom(model));
+        program->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
 
         _vao->bind();
         _vao->draw();

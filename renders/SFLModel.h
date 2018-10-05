@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QImage>
 #include <iostream>
+#include <GMath.hpp>
 #include "SFLMesh.h"
 
 using namespace std;
@@ -67,17 +68,17 @@ private:
         vector<SFL::Texture> textures;
 
         for (int i = 0; i < mesh->mNumVertices; ++i){
-            glm::vec3 position;
+            gm::vec3 position;
             position.x = mesh->mVertices[i].x;
             position.y = mesh->mVertices[i].y;
             position.z = mesh->mVertices[i].z;
 
-            glm::vec3 normal;
+            gm::vec3 normal;
             normal.x = mesh->mNormals[i].x;
             normal.y = mesh->mNormals[i].y;
             normal.z = mesh->mNormals[i].z;
 
-            glm::vec2 texCoords(0.0f, 0.0f);
+            gm::vec2 texCoords(0.0f, 0.0f);
             if(mesh->mTextureCoords[0]) {
                 texCoords.x = mesh->mTextureCoords[0][i].x;
                 texCoords.y = mesh->mTextureCoords[0][i].y;

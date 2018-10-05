@@ -4,14 +4,13 @@
 #include "SFLShaderProgram.h"
 #include <assimp/types.h>
 #include <string>
-#include <glm.hpp>
-#include <gltypes.h>
+#include <GMath.hpp>
 
 namespace SFL {
     struct Vertex{
-        glm::vec3 Position;
-        glm::vec3 Normal;
-        glm::vec2 TexCoords;
+        gm::vec3 Position;
+        gm::vec3 Normal;
+        gm::vec2 TexCoords;
     };
 
     enum TextureType{

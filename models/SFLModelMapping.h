@@ -100,9 +100,9 @@ public:
         _vao->bind();
         _vao->setData(vertices, 8 * 6 * 6, 36, {3,3,2});
 
-        glm::vec3 lightPosition(1.0f, 0.3f, 2.0f);
-        glm::mat4 projection = glm::perspective(45.0, 1.0, 0.1, 100.0);
-        GLfloat *projectonMatPtr = glm::value_ptr(projection);
+        gm::vec3 lightPosition(1.0f, 0.3f, 2.0f);
+        gm::mat4 projection = gm::perspective(45.0f, 1.0f, 0.1f, 100.0f);
+        const float *projectonMatPtr = gm::valuePtrFrom(projection);
 
         initTexture();
         initProgramLight(lightPosition, projectonMatPtr);
@@ -151,14 +151,14 @@ public:
 
         _programLight->bind();
         _programLight->setUniform3f("materialColor", lightColor);
-        _programLight->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        _programLight->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
 
         _vao->draw();
     }
 
     MappingType type;
 
-    glm::vec3 lightColor;
+    gm::vec3 lightColor;
     GLfloat spotAngleInner;
     GLfloat spotAngleOuter;
     GLfloat emissionIntensity;
@@ -189,28 +189,28 @@ private:
         _texEmission->loadTexture2DFromPath(":/magic.jpeg");
     }
 
-    void initProgramLight(glm::vec3 &lightPosition, GLfloat *projectonMatPtr){
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPosition);
-        model = glm::scale(model, glm::vec3(0.2f));
+    void initProgramLight(gm::vec3 &lightPosition, const float *projectonMatPtr){
+        gm::mat4 model = gm::translate(gm::mat4(1.0f), lightPosition);
+        model = gm::scale(model, gm::vec3(0.2f));
 
         _programLight->initializeOpenGLFunctions();
         _programLight->loadFromPath(":/color.vsh",":/color.fsh");
         _programLight->bind();
         _programLight->setUniformMatrix4fv("projection", projectonMatPtr);
-        _programLight->setUniformMatrix4fv("model", glm::value_ptr(model));
+        _programLight->setUniformMatrix4fv("model", gm::valuePtrFrom(model));
     }
 
-    void initProgramTex(GLfloat *projectonMatPtr){
+    void initProgramTex(const float *projectonMatPtr){
         _programTex->initializeOpenGLFunctions();
         _programTex->loadFromPath(":/texture.vsh",":/texture.fsh");
         _programTex->bind();
         _programTex->setUniformMatrix4fv("projection", projectonMatPtr);
-        _programTex->setUniformMatrix4fv("model", glm::value_ptr(glm::mat4(1.0)));
+        _programTex->setUniformMatrix4fv("model", gm::valuePtrFrom(gm::mat4(1.0)));
         _texDiffuse->bind();
         _programTex->setUniform1i("material", 0);
     }
 
-    void initProgramDir(glm::vec3 &lightPosition, GLfloat *projectonMatPtr){
+    void initProgramDir(gm::vec3 &lightPosition, const float *projectonMatPtr){
         _programDir->initializeOpenGLFunctions();
         _programDir->loadFromPath(":/lightDir.vsh",":/lightDir.fsh");
         _programDir->bind();
@@ -218,21 +218,21 @@ private:
         _programDir->setUniform3f("light.direction", -lightPosition);
     }
 
-    void initProgramPoint(glm::vec3 &lightPosition, GLfloat *projectonMatPtr){
+    void initProgramPoint(gm::vec3 &lightPosition, const float *projectonMatPtr){
         _programPoint->initializeOpenGLFunctions();
         _programPoint->loadFromPath(":/lightPoint.vsh",":/lightPoint.fsh");
         _programPoint->bind();
         setBaseParam(_programPoint, lightPosition, projectonMatPtr);
     }
 
-    void initProgramSpot(glm::vec3 &lightPosition, GLfloat *projectonMatPtr){
+    void initProgramSpot(gm::vec3 &lightPosition, const float *projectonMatPtr){
         _programSpot->initializeOpenGLFunctions();
         _programSpot->loadFromPath(":/lightSpot.vsh",":/lightSpot.fsh");
         _programSpot->bind();
         setBaseParam(_programSpot, lightPosition, projectonMatPtr);
     }
 
-    void setBaseParam(SFLShaderProgram *program, glm::vec3 &lightPosition, GLfloat *projectonMatPtr){
+    void setBaseParam(SFLShaderProgram *program, gm::vec3 &lightPosition, const float *projectonMatPtr){
         _texDiffuse->bind();
         program->setUniform1i("material.diffuse",  0);
         _texSpecular->bind();
@@ -241,11 +241,11 @@ private:
         program->setUniform1i("material.emission", 2);
         program->setUniform1f("material.shininess", 32.0);
         program->setUniform3f("light.position", lightPosition);
-        program->setUniformMatrix4fv("model", glm::value_ptr(glm::mat4(1.0)));
+        program->setUniformMatrix4fv("model", gm::valuePtrFrom(gm::mat4(1.0)));
         program->setUniformMatrix4fv("projection", projectonMatPtr);
     }
 
-    void initProgramMulti(GLfloat *projectonMatPtr){
+    void initProgramMulti(const float *projectonMatPtr){
         _programMulti->initializeOpenGLFunctions();
         _programMulti->loadFromPath(":/lightMulti.vsh",":/lightMulti.fsh");
         _programMulti->bind();
@@ -268,7 +268,7 @@ private:
 
     void setProgramTexture(){
         _programTex->bind();
-        _programTex->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        _programTex->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
     }
 
     void setProgramDir(){
@@ -279,7 +279,7 @@ private:
         _programDir->setUniform1f("material.emitIntensity", emissionIntensity);
 
         _programDir->setUniform3f("viewPos", _delegateCamaera->position);
-        _programDir->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        _programDir->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
     }
 
     void setProgramPoint(){
@@ -290,7 +290,7 @@ private:
         _programPoint->setUniform1f("material.emitIntensity", emissionIntensity);
 
         _programPoint->setUniform3f("viewPos", _delegateCamaera->position);
-        _programPoint->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        _programPoint->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
     }
 
     void setProgramSpot(){
@@ -304,31 +304,31 @@ private:
         _programSpot->setUniform3f("light.position", _delegateCamaera->position);
         _programSpot->setUniform3f("light.direction", _delegateCamaera->axisFront);
 
-        _programSpot->setUniform1f("light.radiusInner", cos(glm::radians(spotAngleInner)));
-        _programSpot->setUniform1f("light.radiusOuter", cos(glm::radians(spotAngleOuter)));
+        _programSpot->setUniform1f("light.radiusInner", cos(gm::radians(spotAngleInner)));
+        _programSpot->setUniform1f("light.radiusOuter", cos(gm::radians(spotAngleOuter)));
 
         _programSpot->setUniform3f("viewPos", _delegateCamaera->position);
-        _programSpot->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        _programSpot->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
     }
 
     void setProgramMulti(){
-        glm::vec3 pointLightPositions[] = {
-            glm::vec3( 0.7f,  0.2f,  2.0f),
-            glm::vec3( 2.3f, -3.3f, -4.0f),
-            glm::vec3(-4.0f,  2.0f, -12.0f),
-            glm::vec3( 0.0f,  0.0f, -3.0f)
+        gm::vec3 pointLightPositions[] = {
+            gm::vec3( 0.7f,  0.2f,  2.0f),
+            gm::vec3( 2.3f, -3.3f, -4.0f),
+            gm::vec3(-4.0f,  2.0f, -12.0f),
+            gm::vec3( 0.0f,  0.0f, -3.0f)
         };
-        glm::vec3 cubePositions[] = {
-            glm::vec3( 0.0f,  0.0f,  0.0f),
-            glm::vec3( 2.0f,  5.0f, -15.0f),
-            glm::vec3(-1.5f, -2.2f, -2.5f),
-            glm::vec3(-3.8f, -2.0f, -12.3f),
-            glm::vec3( 2.4f, -0.4f, -3.5f),
-            glm::vec3(-1.7f,  3.0f, -7.5f),
-            glm::vec3( 1.3f, -2.0f, -2.5f),
-            glm::vec3( 1.5f,  2.0f, -2.5f),
-            glm::vec3( 1.5f,  0.2f, -1.5f),
-            glm::vec3(-1.3f,  1.0f, -1.5f)
+        gm::vec3 cubePositions[] = {
+            gm::vec3( 0.0f,  0.0f,  0.0f),
+            gm::vec3( 2.0f,  5.0f, -15.0f),
+            gm::vec3(-1.5f, -2.2f, -2.5f),
+            gm::vec3(-3.8f, -2.0f, -12.3f),
+            gm::vec3( 2.4f, -0.4f, -3.5f),
+            gm::vec3(-1.7f,  3.0f, -7.5f),
+            gm::vec3( 1.3f, -2.0f, -2.5f),
+            gm::vec3( 1.5f,  2.0f, -2.5f),
+            gm::vec3( 1.5f,  0.2f, -1.5f),
+            gm::vec3(-1.3f,  1.0f, -1.5f)
         };
 
         _programMulti->bind();
@@ -347,8 +347,8 @@ private:
         _programMulti->setUniform3f("spotlight.direction",_delegateCamaera->axisFront);
         _programMulti->setUniform3f("spotlight.position", _delegateCamaera->position);
 
-        _programMulti->setUniform1f("spotlight.radiusOuter", cos(glm::radians(spotAngleOuter)));
-        _programMulti->setUniform1f("spotlight.radiusInner", cos(glm::radians(spotAngleInner)));
+        _programMulti->setUniform1f("spotlight.radiusOuter", cos(gm::radians(spotAngleOuter)));
+        _programMulti->setUniform1f("spotlight.radiusInner", cos(gm::radians(spotAngleInner)));
 
         // 3. 点光源
         for(int i = 0; i < 4; ++i) {
@@ -366,25 +366,25 @@ private:
         }
 
         _vao->bind();
-        _programMulti->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        _programMulti->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
 
         // 4. 画箱子
         for(int i = 0; i < 10; ++i) {
-            glm::mat4 model = glm::translate(glm::mat4(1.0), cubePositions[i]);
-            model = glm::rotate(model, 20.0f * i, glm::vec3(1.0f, 0.3f, 0.5f));
-            _programMulti->setUniformMatrix4fv("model", glm::value_ptr(model));
+            gm::mat4 model = gm::translate(gm::mat4(1.0), cubePositions[i]);
+            model = gm::rotate(model, 20.0f * i, gm::vec3(1.0f, 0.3f, 0.5f));
+            _programMulti->setUniformMatrix4fv("model", gm::valuePtrFrom(model));
             _vao->draw();
         }
 
         // 5. 画灯光
         _programLight->bind();
         _programLight->setUniform3f("materialColor", lightColor);
-        _programLight->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        _programLight->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
 
         for(int i = 0; i < 4; ++i) {
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), pointLightPositions[i]);
-            model = glm::scale(model, glm::vec3(0.2f));
-            _programLight->setUniformMatrix4fv("model", glm::value_ptr(model));
+            gm::mat4 model = gm::translate(gm::mat4(1.0f), pointLightPositions[i]);
+            model = gm::scale(model, gm::vec3(0.2f));
+            _programLight->setUniformMatrix4fv("model", gm::valuePtrFrom(model));
             _vao->draw();
         }
     }

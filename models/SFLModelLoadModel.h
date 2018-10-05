@@ -68,12 +68,12 @@ public:
                       }"
                   );
         _program->bind();
-        _program->setUniform3f("lightPosition", glm::vec3(1.0f, 0.3f, 2.0f));
-        _program->setUniformMatrix4fv("projection", glm::value_ptr(glm::perspective(45.0f, 1.0f, 0.1f, 100.0f)));
-        glm::mat4 model(1.0);
-        model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-        _program->setUniformMatrix4fv("model", glm::value_ptr(model));
+        _program->setUniform3f("lightPosition", gm::vec3(1.0f, 0.3f, 2.0f));
+        _program->setUniformMatrix4fv("projection", gm::valuePtrFrom(gm::perspective(45.0f, 1.0f, 0.1f, 100.0f)));
+        gm::mat4 model(1.0);
+        model = gm::translate(model, gm::vec3(0.0f, -1.75f, 0.0f));
+        model = gm::scale(model, gm::vec3(0.2f, 0.2f, 0.2f));
+        _program->setUniformMatrix4fv("model", gm::valuePtrFrom(model));
 
         _model->initializeOpenGLFunctions();
     }
@@ -88,7 +88,7 @@ public:
 
         _program->bind();
         _program->setUniform3f("viewPos", _delegateCamaera->position);
-        _program->setUniformMatrix4fv("view", glm::value_ptr(_delegateCamaera->viewMatrix()));
+        _program->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
 
         _model->draw(*_program);
     }

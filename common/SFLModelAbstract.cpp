@@ -34,15 +34,6 @@ void SFLModelAbstract::setDelegate(SFLCameraVirtual *delegate)
     _delegateCamaera = delegate;
 }
 
-void SFLModelAbstract::logMatrix(glm::mat4 matrix)
-{
-    float *a = glm::value_ptr(matrix);
-    qDebug() << "matrix" << endl;
-    for (int i=0; i < 4; ++i){
-        qDebug() << *(a + i * 4) << *(a + i * 4 + 1) << *(a + i * 4 + 2) << *(a + i * 4 + 3);
-    }
-}
-
 SFLViewAbstract *SFLModelAbstract::view()
 {
     return _view;

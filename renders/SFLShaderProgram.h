@@ -9,9 +9,7 @@
 #include <QtCore/QTextStream>
 #include <QDebug>
 
-#include <gtc/type_ptr.hpp>
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
+#include <GMath.hpp>
 
 using namespace std;
 
@@ -87,7 +85,7 @@ public:
     void setUniform3f(const char* nameAttr, GLfloat x, GLfloat y, GLfloat z){
         glUniform3f(glGetUniformLocation(_programID, nameAttr), x, y, z);
     }
-    void setUniform3f(const char* nameAttr, glm::vec3 vector){
+    void setUniform3f(const char* nameAttr, gm::vec3 vector){
          setUniform3f(nameAttr, vector.x, vector.y, vector.z);
     }
 
