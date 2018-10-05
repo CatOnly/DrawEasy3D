@@ -6,6 +6,7 @@
 #include <QImage>
 #include <QCoreApplication>
 #include <QDebug>
+#include <iostream>
 
 class SFLModelNoLight: public SFLModelAbstract
 {
@@ -39,9 +40,10 @@ public:
         glGenBuffers(1, &_elementBufferObjRef);
         glGenTextures(1, &_texture2DRef);
 
-        setupVertexArrayObject();
-        setupShader();
+        // order is not important
         setupTexture2D();
+        setupShader();
+        setupVertexArrayObject();
 
         // Bind Textures using texture units
         glActiveTexture(GL_TEXTURE0);
@@ -62,7 +64,7 @@ public:
         transform = glm::rotate(transform, _rotateAngle.z, glm::vec3(0.0, 0.0, 1.0));
         transform = glm::scale(transform, _scale);
         transform = glm::translate(transform, _move);
-        transform = glm::perspective(_viewAngle, 1.0f, _viewFront, _viewFarther) * _delegateCamaera->viewMatrix() * transform;
+        transform = glm::perspective(glm::radians(_viewAngle), 1.0f, _viewFront, _viewFarther) * _delegateCamaera->viewMatrix() * transform;
         glUniformMatrix4fv(glGetUniformLocation(_programID, "transform"), 1, GL_FALSE, glm::value_ptr(transform));
 
         if (_hasTexture){
@@ -132,6 +134,10 @@ private:
     GLuint _programID = 0;
 
     void setupVertexArrayObject() {
+        // 3  ->  0
+        // ^ |\   |
+        // |   \  v
+        // 2  <-  1
         GLfloat vertices[] = {
                 // Positions          // Colors           // Texture Coords
                  0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top Right
@@ -170,6 +176,7 @@ private:
         using namespace std;
 
         const char * shaderSrcVertex = "#version 330 core\
+                                       precision mediump float;\
         layout (location = 0) in vec3 position;\
         layout (location = 1) in vec3 color;\
         layout (location = 2) in vec2 texCoord;\

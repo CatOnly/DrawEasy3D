@@ -19,5 +19,7 @@
         <file>texture.vsh</file>
         <file>processEdge.fsh</file>
         <file>processEdge.vsh</file>
+        <file>cartoon.fsh</file>
+        <file>cartoon.vsh</file>
     </qresource>
 </RCC>

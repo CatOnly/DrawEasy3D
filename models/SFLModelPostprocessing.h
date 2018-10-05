@@ -6,7 +6,7 @@
 #include "../renders/SFLShaderProgram.h"
 #include "../renders/SFLVertexArray.h"
 #include "../renders/SFLTexture.h"
-#include "../library/sfl/FaceBeautify.h"
+#include "../library/sfl/SFLPostProcessing.h"
 
 class SFLModelPostprocessing: public SFLModelAbstract
 {
@@ -14,7 +14,9 @@ public:
     enum ProcessType{
         TypeNoProcess,
         TypeEdge,
-        TypeFaceBeautify
+        TypeFaceBeautify,
+        TypeCartoon,
+        TypeSizeTAG
     };
 
     ProcessType type;
@@ -26,9 +28,11 @@ public:
         _view = new SFLViewPostprocessing(this);
         _vao = new SFLVertexArray();
         _texImage = new SFLTexture();
-        _programFaceBeautify = new FaceBeautify();
-        _programOrigin = new SFLShaderProgram();
-        _programEdge = new SFLShaderProgram();
+        _postProcessing = new SFLPostProcessing();
+
+        for(int i = 0; i < static_cast<int>(ProcessType::TypeSizeTAG); ++i){
+            _programs.push_back(new SFLShaderProgram());
+        }
 
         type = TypeNoProcess;
         radius = 1.0;
@@ -39,11 +43,10 @@ public:
         if (_hasInitialized){
 
         }
+        _programs.clear();
         DELETE_SAFE(_vao)
         DELETE_SAFE(_texImage)
-        DELETE_SAFE(_programOrigin)
-        DELETE_SAFE(_programEdge)
-        DELETE_SAFE(_programFaceBeautify)
+        DELETE_SAFE(_postProcessing)
     }
 
     void initializeOpenGL() override {
@@ -67,8 +70,9 @@ public:
         _texImage->loadTexture2DFromPath(":/woman.png");
         _texImage->bind();
 
-        _programOrigin->initializeOpenGLFunctions();
-        _programOrigin->loadFromStr(
+        SFLShaderProgram *program = _programs[static_cast<int>(TypeNoProcess)];
+        program->initializeOpenGLFunctions();
+        program->loadFromStr(
                     "#version 330 core\
                     layout (location = 0) in vec3 position;\
                     layout (location = 1) in vec2 texCoord;\
@@ -85,15 +89,22 @@ public:
                         color = texture(material, TexCoord);\
                     }"
                     );
-        _programOrigin->bind();
-        _programOrigin->setUniform1i("material", 0);
+        program->bind();
+        program->setUniform1i("material", 0);
 
-        _programEdge->initializeOpenGLFunctions();
-        _programEdge->loadFromPath(":/processEdge.vsh",":/processEdge.fsh");
-        _programEdge->bind();
-        _programEdge->setUniform1i("material", 0);
+        program = _programs[static_cast<int>(TypeEdge)];
+        program->initializeOpenGLFunctions();
+        program->loadFromPath(":/processEdge.vsh",":/processEdge.fsh");
+        program->bind();
+        program->setUniform1i("material", 0);
 
-        _programFaceBeautify->initializeOpenGLFunctions();
+        program = _programs[static_cast<int>(TypeCartoon)];
+        program->initializeOpenGLFunctions();
+        program->loadFromPath(":/cartoon.vsh",":/cartoon.fsh");
+        program->bind();
+        program->setUniform1i("material", 0);
+
+        _postProcessing->initializeOpenGLFunctions();
     }
 
     void render() override {
@@ -107,19 +118,28 @@ public:
         _texImage->active();
         _texImage->bind();
 
-        _programOrigin->unBind();
-
         switch(type){
         case TypeNoProcess:
-            _programOrigin->bind();
+            _programs[static_cast<int>(type)]->bind();
             break;
-        case TypeEdge:
-            _programEdge->bind();
-            _programEdge->setUniform2f("offsetSteps", stepX * radius, stepY * radius);
+        case TypeEdge:{
+            SFLShaderProgram *program = _programs[static_cast<int>(type)];
+            program->bind();
+            program->setUniform2f("offsetSteps", stepX * radius, stepY * radius);
             break;
+        }
         case TypeFaceBeautify:
-            _programFaceBeautify->setParams(param, stepX * radius, stepY * radius);
+            _postProcessing->setParams(SFLPostProcessing::typeFaceBeautify, param, stepX * radius, stepY * radius);
             break;
+        case TypeCartoon:{
+            SFLShaderProgram *program = _programs[static_cast<int>(type)];
+            program->bind();
+            program->setUniform1f("radio", param);
+            program->setUniform2f("offsetSteps", stepX * radius, stepY * radius);
+            break;
+        }
+        default:
+            _programs[static_cast<int>(TypeNoProcess)]->bind();
         }
 
         _vao->bind();
@@ -129,9 +149,9 @@ public:
 private:
     SFLVertexArray *_vao;
     SFLTexture *_texImage;
-    SFLShaderProgram *_programOrigin;
-    SFLShaderProgram *_programEdge;
-    FaceBeautify *_programFaceBeautify;
+
+    std::vector<SFLShaderProgram *> _programs;
+    SFLPostProcessing *_postProcessing;
 };
 
 #endif // SFLMODELPOSTPROCESSING_H

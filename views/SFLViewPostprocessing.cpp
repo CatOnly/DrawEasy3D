@@ -4,7 +4,7 @@
 
 SFLViewPostprocessing::SFLViewPostprocessing(SFLModelAbstract *owner, QWidget *parent):SFLViewAbstract(owner, parent)
 {
-    _types = QStringList({"原图","边缘检测","美颜"});
+    _types = QStringList({"原图","边缘检测","美颜","矢量风格"});
     _radiusEditor = new SFLVec1Editor("采样范围", SFLVec1Editor::typePosition);
     _paramEditor = new SFLVec1Editor("参数", SFLVec1Editor::typePosition);
 

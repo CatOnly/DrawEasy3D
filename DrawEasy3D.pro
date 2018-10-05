@@ -31,11 +31,11 @@ macx {
     DISTFILES += \
         library/zlib/libzlibstatic.a \
         library/assimp/libassimp.3.3.1.dylib\
-        library/sfl/libFaceBeautify.a
+        library/sfl/libPostProcessing.a
 
     LIBS += -L$$PWD/library/zlib/ -lzlibstatic
     LIBS += -L$$PWD/library/assimp/ -lassimp.3.3.1
-    LIBS += -L$$PWD/library/sfl/ -lFaceBeautify
+    LIBS += -L$$PWD/library/sfl/ -lPostProcessing
 }
 
 SOURCES += \
@@ -52,8 +52,7 @@ SOURCES += \
     common/SFLVec1Editor.cpp \
     views/SFLViewMapping.cpp \
     views/SFLViewLoadModel.cpp \
-    views/SFLViewPostprocessing.cpp \
-    math/SGLMath.cpp
+    views/SFLViewPostprocessing.cpp
 
 HEADERS += \
         MainWindow.h \
@@ -83,12 +82,7 @@ HEADERS += \
     views/SFLViewPostprocessing.h \
     renders/SFLMesh.h \
     renders/SFLModel.h \
-    math/vec3.h \
-    math/vec4.h \
-    math/SGLMath.h \
-    math/mat3x3.h \
-    math/mat4x4.h \
-    library/sfl/FaceBeautify.h
+    library/sfl/SFLPostProcessing.h
 
 HEADERS += \
     library/glm/detail/_features.hpp \
@@ -244,3 +238,7 @@ HEADERS += \
 RESOURCES += \
     assets/assetInfo.qrc \
     shaders/shaders.qrc
+
+DISTFILES += \
+    shaders/cartoon.fsh \
+    shaders/cartoon.vsh
