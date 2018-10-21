@@ -2,7 +2,6 @@
 #define SFLMESH_H
 
 #include "SFLShaderProgram.h"
-#include <assimp/types.h>
 #include <string>
 #include <GMath.hpp>
 
