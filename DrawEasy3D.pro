@@ -97,7 +97,3 @@ HEADERS += \
 RESOURCES += \
     assets/assetInfo.qrc \
     shaders/shaders.qrc
-
-DISTFILES += \
-    shaders/cartoon.fsh \
-    shaders/cartoon.vsh

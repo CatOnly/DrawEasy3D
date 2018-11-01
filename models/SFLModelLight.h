@@ -13,7 +13,8 @@ public:
         typeColor,
         typeLight,
         typeModelGouraud,
-        typeModelPhone
+        typeModelPhone,
+        typeModelBlinnPhone
     };
 
     SFLModelLight():SFLModelAbstract() {
@@ -24,6 +25,7 @@ public:
         _programLight = new SFLShaderProgram();
         _programModelGouraud = new SFLShaderProgram();
         _programModelPhone = new SFLShaderProgram();
+        _programModelPhoneBlinn = new SFLShaderProgram();
 
         type = typeColor;
         isRotateLight = false;
@@ -48,6 +50,7 @@ public:
         DELETE_SAFE(_programLight)
         DELETE_SAFE(_programModelGouraud)
         DELETE_SAFE(_programModelPhone)
+        DELETE_SAFE(_programModelPhoneBlinn)
     }
 
     void initializeOpenGL() override {
@@ -120,6 +123,11 @@ public:
         _programModelPhone->loadFromPath(":/lightPhong.vsh", ":/lightPhong.fsh");
         _programModelPhone->bind();
         _programModelPhone->setUniformMatrix4fv("projection", gm::valuePtrFrom(projection));
+
+        _programModelPhoneBlinn->initializeOpenGLFunctions();
+        _programModelPhoneBlinn->loadFromPath(":/lightPhong.vsh", ":/lightPhongBlinn.fsh");
+        _programModelPhoneBlinn->bind();
+        _programModelPhoneBlinn->setUniformMatrix4fv("projection", gm::valuePtrFrom(projection));
     }
 
     void render() override {
@@ -142,6 +150,9 @@ public:
             break;
         case typeModelPhone:
             renderModel(_programModelPhone, lightPosition);
+            break;
+        case typeModelBlinnPhone:
+            renderModel(_programModelPhoneBlinn, lightPosition);
             break;
         }
 
@@ -177,6 +188,7 @@ protected:
     SFLShaderProgram *_programLight;
     SFLShaderProgram *_programModelGouraud;
     SFLShaderProgram *_programModelPhone;
+    SFLShaderProgram *_programModelPhoneBlinn;
 
     void renderColor(){
         _programColor->bind();

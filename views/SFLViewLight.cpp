@@ -8,7 +8,7 @@
 
 SFLViewLight::SFLViewLight(SFLModelAbstract *owner, QWidget *parent) : SFLViewAbstract(owner, parent)
 {
-    _types = QStringList({"无光照","色彩光照","高氏光照 (Gouraud)", "冯氏光照 (Phong)","Blinn-Phong"});
+    _types = QStringList({"无光照","色彩光照","高氏光照 (Gouraud)", "冯氏光照 (Phong)", "Blinn-Phong"});
 
     _lightColor = new SFLVec3Editor("颜色");
     _materialColor = new SFLVec3Editor("颜色");
@@ -228,6 +228,9 @@ void  SFLViewLight::changeViewBy(int index)
             break;
         case 3:
             type = SFLModelLight::typeModelPhone;
+            break;
+        case 4:
+            type = SFLModelLight::typeModelBlinnPhone;
             break;
         default:
             type = SFLModelLight::typeColor;

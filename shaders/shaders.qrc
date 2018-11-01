@@ -21,5 +21,6 @@
         <file>processEdge.vsh</file>
         <file>cartoon.fsh</file>
         <file>cartoon.vsh</file>
+        <file>lightPhongBlinn.fsh</file>
     </qresource>
 </RCC>
