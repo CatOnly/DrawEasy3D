@@ -10,7 +10,7 @@
 
 SFLViewLoadModel::SFLViewLoadModel(SFLModelAbstract *owner, QWidget *parent):SFLViewAbstract(owner, parent)
 {
-    _types = QStringList({"请添加模型"});
+    _types = QStringList({"请添加 OBJ 类型的模型"});
     _labelModel = new QLabel(LABEL_TEXT_DEFAULT);
     _loadModelBtn = new QPushButton("重新添加模型");
 

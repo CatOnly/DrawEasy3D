@@ -39,7 +39,7 @@ public:
             std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
             return;
         }
-        _directory = path.substr(0, path.find_last_of(QDir::separator().row()));
+        _directory = path.substr(0, path.find_last_of(QDir::separator().toLatin1()));
 
         processNode(scene->mRootNode, scene);
     }
