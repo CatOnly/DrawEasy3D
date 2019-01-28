@@ -109,6 +109,7 @@ public:
 
     void render() override {
         glClearColor(0.984f, 0.306f, 0.56f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         GLfloat width = 700.0f;
         GLfloat height = 700.0f;

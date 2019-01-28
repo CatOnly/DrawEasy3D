@@ -26,6 +26,7 @@ gm_mat##size<T> operator symbol (const gm_mat##size<T> &m){\
 \
     return mTmp;\
 }
+
 #define GM_MAT_OPERATOR_SELF(size, symbol)\
 gm_mat##size<T>& operator symbol (const gm_mat##size<T> &m){\
     for (int i = 0; i < size; ++i){\
@@ -36,7 +37,7 @@ gm_mat##size<T>& operator symbol (const gm_mat##size<T> &m){\
 }
 
 #define GM_MAT_OPERATOR_NUM_LEFT(size, symbol)\
-gm_mat##size<T> operator symbol (const T value){\
+gm_mat##size<T> operator symbol (const T &value){\
     gm_mat##size<T> mTmp;\
     for (int i = 0; i < size; ++i){\
         mTmp[i] = _column[i] symbol value;\
@@ -47,7 +48,7 @@ gm_mat##size<T> operator symbol (const T value){\
 
 #define GM_MAT_OPERATOR_NUM_RIGHT(size, symbol)\
 template<typename T>\
-gm_mat##size<T> operator symbol (const T value, const gm_mat##size<T> &mat){\
+gm_mat##size<T> operator symbol (const T &value, const gm_mat##size<T> &mat){\
     gm_mat##size<T> mTmp;\
     for (int i = 0; i < size; ++i){\
         mTmp[i] = mat[i] symbol value;\

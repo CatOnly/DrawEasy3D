@@ -22,5 +22,10 @@
         <file>cartoon.fsh</file>
         <file>cartoon.vsh</file>
         <file>lightPhongBlinn.fsh</file>
+        <file>model.fsh</file>
+        <file>model.vsh</file>
+        <file>modelGeoBlow.fsh</file>
+        <file>modelGeoNormal.fsh</file>
+        <file>modelGeoNormal.vsh</file>
     </qresource>
 </RCC>

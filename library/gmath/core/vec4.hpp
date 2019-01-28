@@ -75,10 +75,10 @@ namespace gm {
         union { T z, b, p; };
         union { T w, a, q; };
 
-        gm_vec4(T x, T y, T z, T w):x(static_cast<T>(x)),y(static_cast<T>(y)),z(static_cast<T>(z)),w(static_cast<T>(w)){}
-        gm_vec4(T x = static_cast<T>(0)):gm_vec4(x,x,x,x){}
+        gm_vec4(const T x, const T y, const T z, const T w):x(static_cast<T>(x)),y(static_cast<T>(y)),z(static_cast<T>(z)),w(static_cast<T>(w)){}
         gm_vec4(const gm_vec4<T> &v):gm_vec4(v.x, v.y, v.z, v.w){}
 
+        explicit gm_vec4(const T x = static_cast<T>(0)):gm_vec4(x,x,x,x){}
         explicit gm_vec4(const gm_vec3<T> &v, const T w = static_cast<T>(0)):gm_vec4(v.x, v.y, v.z, w){}
 
         gm_vec4<T> operator - () const {            
@@ -95,12 +95,10 @@ namespace gm {
         GM_V4_OPERATOR_BASE(+)
         GM_V4_OPERATOR_BASE(-)
         GM_V4_OPERATOR_BASE(*)
-        GM_V4_OPERATOR_BASE(/)
 
         GM_V4_OPERATOR_SELF(+=)
         GM_V4_OPERATOR_SELF(-=)
         GM_V4_OPERATOR_SELF(*=)
-        GM_V4_OPERATOR_SELF(/=)
 
         GM_V4_OPERATOR_SELF_LAST(++)
         GM_V4_OPERATOR_SELF_LAST(--)
@@ -110,18 +108,61 @@ namespace gm {
         GM_V4_OPERATOR_NUM_RIGHT(+)
         GM_V4_OPERATOR_NUM_RIGHT(-)
         GM_V4_OPERATOR_NUM_RIGHT(*)
-        GM_V4_OPERATOR_NUM_RIGHT(/)
 
         GM_V4_OPERATOR_SELF_NUM_RIGHT(+=)
         GM_V4_OPERATOR_SELF_NUM_RIGHT(-=)
         GM_V4_OPERATOR_SELF_NUM_RIGHT(*=)
-        GM_V4_OPERATOR_SELF_NUM_RIGHT(/=)
+
+        gm_vec4<T> operator / (const gm_vec4<T> &v) const {
+            GM_ASSERT(v.x != static_cast<T>(0) && v.y != static_cast<T>(0) && v.z != static_cast<T>(0) && v.w != static_cast<T>(0));
+            return gm_vec4<T>(x / v.x, y / v.y, z / v.z, w / v.w);
+        }
+
+        gm_vec4<T>& operator /= (const gm_vec4<T> &v){
+            GM_ASSERT(v.x != static_cast<T>(0) && v.y != static_cast<T>(0) && v.z != static_cast<T>(0) && v.w != static_cast<T>(0));
+            x /= v.x;
+            y /= v.y;
+            z /= v.z;
+            w /= v.w;
+
+            return *this;
+        }
+
+        gm_vec4<T> operator / (const T &value) const {
+            GM_ASSERT(value != static_cast<T>(0));
+            gm_vec4<T> v;
+            v.x = x / value;
+            v.y = y / value;
+            v.z = z / value;
+            v.w = w / value;
+
+            return v;
+        }
+
+        gm_vec4<T>& operator /= (const T &value){
+            GM_ASSERT(value != static_cast<T>(0));
+            x /= value;
+            y /= value;
+            z /= value;
+            w /= value;
+
+            return *this;
+        }
+
+        bool isValueEqual(const gm_vec4<T>& v){
+            return (v.x == x && v.y == y && v.z == z && v.w == w);
+        }
     };
 
     GM_V4_OPERATOR_NUM_LEFT(+)
     GM_V4_OPERATOR_NUM_LEFT(-)
     GM_V4_OPERATOR_NUM_LEFT(*)
-    GM_V4_OPERATOR_NUM_LEFT(/)
+
+    template<typename T>
+    gm_vec4<T> operator / (const T &value, const gm_vec4<T> &v){
+        GM_ASSERT(v.x != static_cast<T>(0) && v.y != static_cast<T>(0) && v.z != static_cast<T>(0) && v.w != static_cast<T>(0));
+        return gm_vec4<T>(value / v.x, value / v.y, value / v.z, value / v.w);
+    }
 
     template<typename T>
     std::ostream& operator << (std::ostream &os, const gm_vec4<T> &v){
@@ -132,6 +173,11 @@ namespace gm {
            <<"(" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ") ";
 
         return os;
+    }
+
+    template<typename T>
+    T dot(const gm_vec4<T> &vL, const gm_vec4<T> &vR) {
+        return vL.x * vR.x + vL.y * vR.y + vL.z * vR.z + vL.w * vR.w;
     }
 
     template<typename T>
@@ -152,12 +198,10 @@ namespace gm {
     template<typename T>
     gm_vec4<T> normalize(const gm_vec4<T> &v) {
         T avg = length(v);
-        return gm_vec4<T>(v.x/avg, v.y/avg, v.z/avg, v.w/avg);
-    }
+        bool isNoZero = avg != static_cast<T>(0);
+        GM_ASSERT(isNoZero);
 
-    template<typename T>
-    T dot(const gm_vec4<T> &vL, const gm_vec4<T> &vR) {
-        return vL.x * vR.x + vL.y * vR.y + vL.z * vR.z + vL.w * vR.w;
+        return isNoZero ? gm_vec4<T>(v.x/avg, v.y/avg, v.z/avg, v.w/avg) : gm_vec4<T>();
     }
 }
 

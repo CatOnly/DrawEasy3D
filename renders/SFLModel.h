@@ -32,8 +32,9 @@ public:
     }
 
     void loadModel(string path) {
+
         Assimp::Importer import;
-        const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+        const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
             std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
@@ -42,6 +43,23 @@ public:
         _directory = path.substr(0, path.find_last_of(QDir::separator().toLatin1()));
 
         processNode(scene->mRootNode, scene);
+        std::cout << "current mesh:" << _meshes.size() << std::endl;
+    }
+
+    void loadMesh(string path){
+        std::cout << "Load Mesh path:" << path << std::endl;
+        gm::vec2 texcoord;
+        gm::vec3 normal(0, 0, 1);
+
+        vector<Texture> textures;
+        vector<GLuint> indices;
+        vector<Vertex> vertices;
+
+        SFLMesh sflMesh(vertices, indices, textures);
+        sflMesh.initializeOpenGLFunctions();
+
+        _meshes.push_back(sflMesh);
+        std::cout << "Mesh length:" << _meshes.size() << std::endl;
     }
 
 private:

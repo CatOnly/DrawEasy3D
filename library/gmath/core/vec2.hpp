@@ -1,20 +1,19 @@
 #ifndef GM_VEC2_H
 #define GM_VEC2_H
 
-#include <cassert>
-#include <math.h>
 #include <iostream>
 #include <iomanip>
 
 #include "config.h"
+#include "util.hpp"
 
 #define GM_VEC_OPERATOR_INDEX(size)\
 T & operator[](int i) { \
-    assert(i >= 0 && i < size);\
+    GM_ASSERT(i >= 0 && i < size);\
     return (&x)[i];\
 }\
 T const & operator[](int i) const { \
-    assert(i >= 0 && i < size);\
+    GM_ASSERT(i >= 0 && i < size);\
     return (&x)[i];\
 }
 
@@ -77,8 +76,8 @@ namespace gm {
         union { T x, r, s;};
         union { T y, g, t;};
 
-        gm_vec2(T x, T y):x(static_cast<T>(x)),y(static_cast<T>(y)){}
-        gm_vec2(T x = static_cast<T>(0)):gm_vec2(x,x){}
+        gm_vec2(const T x, const T y):x(static_cast<T>(x)),y(static_cast<T>(y)){}
+        gm_vec2(const T x = static_cast<T>(0)):gm_vec2(x,x){}
         gm_vec2(const gm_vec2<T> &vec):gm_vec2(vec.x, vec.y){}
 
         gm_vec2<T> operator - () const {
@@ -93,12 +92,10 @@ namespace gm {
         GM_V2_OPERATOR_BASE(+)
         GM_V2_OPERATOR_BASE(-)
         GM_V2_OPERATOR_BASE(*)
-        GM_V2_OPERATOR_BASE(/)
 
         GM_V2_OPERATOR_SELF(+=)
         GM_V2_OPERATOR_SELF(-=)
         GM_V2_OPERATOR_SELF(*=)
-        GM_V2_OPERATOR_SELF(/=)
 
         GM_V2_OPERATOR_SELF_LAST(++)
         GM_V2_OPERATOR_SELF_LAST(--)
@@ -108,28 +105,70 @@ namespace gm {
         GM_V2_OPERATOR_NUM_RIGHT(+)
         GM_V2_OPERATOR_NUM_RIGHT(-)
         GM_V2_OPERATOR_NUM_RIGHT(*)
-        GM_V2_OPERATOR_NUM_RIGHT(/)
 
         GM_V2_OPERATOR_SELF_NUM_RIGHT(+=)
         GM_V2_OPERATOR_SELF_NUM_RIGHT(-=)
         GM_V2_OPERATOR_SELF_NUM_RIGHT(*=)
-        GM_V2_OPERATOR_SELF_NUM_RIGHT(/=)
+
+        gm_vec2<T> operator / (const gm_vec2<T> &v) const {
+            GM_ASSERT(v.x != static_cast<T>(0) && v.y != static_cast<T>(0));
+            return gm_vec2<T>(x / v.x, y / v.y);
+        }
+
+        gm_vec2<T>& operator /= (const gm_vec2<T> &v){
+            GM_ASSERT(v.x != static_cast<T>(0) && v.y != static_cast<T>(0));
+            x /= v.x;
+            y /= v.y;
+
+            return *this;
+        }
+
+        gm_vec2<T> operator / (const T &value) const {
+            GM_ASSERT(value != static_cast<T>(0));
+            gm_vec2<T> v;
+            v.x = x / value;
+            v.y = y / value;
+
+            return v;
+        }
+
+        gm_vec2<T>& operator /= (const T &value){
+            GM_ASSERT(value != static_cast<T>(0));
+            x /= value;
+            y /= value;
+
+            return *this;
+        }
+
+        bool isValueEqual(const gm_vec2<T>& v){
+            return (v.x == x && v.y == y);
+        }
     };
 
     GM_V2_OPERATOR_NUM_LEFT(+)
     GM_V2_OPERATOR_NUM_LEFT(-)
     GM_V2_OPERATOR_NUM_LEFT(*)
-    GM_V2_OPERATOR_NUM_LEFT(/)
+
+    template<typename T>
+    gm_vec2<T> operator / (const T &value, const gm_vec2<T> &v){
+        GM_ASSERT(v.x != static_cast<T>(0) && v.y != static_cast<T>(0));
+        return gm_vec2<T>(value / v.x, value / v.y);
+    }
 
     template<typename T>
     std::ostream& operator << (std::ostream &os, const gm_vec2<T> &v){
         using namespace std;
         os << setprecision(GM_OUTPUT_PRECISION)
            << setw(GM_OUTPUT_WIDTH)
-           << GM_OUTPUT_POINT
+           << GM_OUTPUT_POINT << fixed
            <<"(" << v.x << ", " << v.y << ") ";
 
         return os;
+    }
+
+    template<typename T>
+    T dot(const gm_vec2<T> &vL, const gm_vec2<T> &vR) {
+        return vL.x * vR.x + vL.y * vR.y;
     }
 
     template<typename T>
@@ -148,12 +187,10 @@ namespace gm {
     template<typename T>
     gm_vec2<T> normalize(const gm_vec2<T> &v) {
         T avg = length(v);
-        return gm_vec2<T>(v.x/avg, v.y/avg);
-    }
+        bool isNoZero = avg != static_cast<T>(0);
+        GM_ASSERT(isNoZero);
 
-    template<typename T>
-    T dot(const gm_vec2<T> &vL, const gm_vec2<T> &vR) {
-        return vL.x * vR.x + vL.y * vR.y;
+        return isNoZero ? gm_vec2<T>(v.x/avg, v.y/avg) : gm_vec2<T>();
     }
 }
 

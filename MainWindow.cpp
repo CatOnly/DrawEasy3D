@@ -35,7 +35,7 @@ void MainWindow::setupUI()
     addDockWidget(Qt::RightDockWidgetArea, _controlView);
 
     QRect deskRect = QApplication::desktop()->availableGeometry();
-    setGeometry((deskRect.width() - width()) * 0.5, (deskRect.height() - height()) * 0.5, width(), height());
+//    setGeometry((deskRect.width() - width()) * 0.5, (deskRect.height() - height()) * 0.5, width(), height());
     setFixedSize(_renderView->width() + _controlView->width(), _renderView->height());
     setWindowTitle("Keep Reading , Keep Writing , Keep Coding");
 
