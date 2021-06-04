@@ -27,5 +27,17 @@
         <file>modelGeoBlow.fsh</file>
         <file>modelGeoNormal.fsh</file>
         <file>modelGeoNormal.vsh</file>
+        <file>textureNormal.fsh</file>
+        <file>textureNormal.vsh</file>
+        <file>textureSkyBox.fsh</file>
+        <file>textureSkyBox.vsh</file>
+        <file>textureCube.fsh</file>
+        <file>textureCube.vsh</file>
+        <file>shadow.fsh</file>
+        <file>shadow.vsh</file>
+        <file>shadowFloor.fsh</file>
+        <file>shadowFloor.vsh</file>
+        <file>shadowDepth.fsh</file>
+        <file>shadowDepth.vsh</file>
     </qresource>
 </RCC>

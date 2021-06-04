@@ -12,10 +12,12 @@ class SFLModelMapping: public SFLModelAbstract
 public:
     enum MappingType{
         typeTex,
+        typeTexNormal,
+        typeTexParallax,
         typeLightDir,
         typeLightPoint,
         typeLightSpot,
-        typeLightMulti
+        typeLightMulti,
     };
 
     SFLModelMapping():SFLModelAbstract(){
@@ -23,6 +25,7 @@ public:
         _view = new SFLViewMapping(this);
 
         _vao = new SFLVertexArray();
+        _vaoNormal = new SFLVertexArray();
 
         _programLight = new SFLShaderProgram();
         _programTex = new SFLShaderProgram();
@@ -30,16 +33,21 @@ public:
         _programPoint = new SFLShaderProgram();
         _programSpot = new SFLShaderProgram();
         _programMulti = new SFLShaderProgram();
+        _programTexNormal = new SFLShaderProgram();
 
         _texDiffuse = new SFLTexture(true);
         _texSpecular = new SFLTexture(true);
         _texEmission = new SFLTexture(true);
+        _texNormalBG = new SFLTexture(true);
+        _texNormal = new SFLTexture(true);
     }
     ~SFLModelMapping(){
         DELETE_SAFE(_vao)
+        DELETE_SAFE(_vaoNormal)
 
         DELETE_SAFE(_programLight)
         DELETE_SAFE(_programTex)
+        DELETE_SAFE(_programTexNormal)
         DELETE_SAFE(_programDir)
         DELETE_SAFE(_programPoint)
         DELETE_SAFE(_programSpot)
@@ -48,6 +56,8 @@ public:
         DELETE_SAFE(_texDiffuse)
         DELETE_SAFE(_texSpecular)
         DELETE_SAFE(_texEmission)
+        DELETE_SAFE(_texNormalBG)
+        DELETE_SAFE(_texNormal)
     }
 
     void initializeOpenGL() override {
@@ -100,6 +110,8 @@ public:
         _vao->bind();
         _vao->setData(vertices, 8 * 6 * 6, 36, {3,3,2});
 
+        initVAONormal();
+
         gm::vec3 lightPosition(1.0f, 0.3f, 2.0f);
         gm::mat4 projection = gm::perspective(45.0f, 1.0f, 0.1f, 100.0f);
         const float *projectonMatPtr = gm::valuePtrFrom(projection);
@@ -107,13 +119,14 @@ public:
         initTexture();
         initProgramLight(lightPosition, projectonMatPtr);
         initProgramTex(projectonMatPtr);
+        initProgramTexNormal(lightPosition, projectonMatPtr);
         initProgramDir(lightPosition, projectonMatPtr);
         initProgramPoint(lightPosition, projectonMatPtr);
         initProgramSpot(lightPosition, projectonMatPtr);
         initProgramMulti(projectonMatPtr);
     }
 
-    void render() override {
+    void render(int viewPortW, int viewPortH) override {
         ++_times;
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.1, 0.1, 0.1, 1.0f);
@@ -125,10 +138,17 @@ public:
         _texSpecular->bind();
         _texEmission->active();
         _texEmission->bind();
+        _texNormalBG->active();
+        _texNormalBG->bind();
+        _texNormal->active();
+        _texNormal->bind();
 
         switch (type) {
             case typeTex:
                 setProgramTexture();
+                break;
+            case typeTexNormal:
+                setProgramTextureNormal();
                 break;
             case typeLightDir:
                 setProgramDir();
@@ -146,13 +166,19 @@ public:
 
         if (type == typeLightMulti) return;
 
-        _vao->bind();
-        _vao->draw();
+        if (type == typeTexNormal) {
+            _vaoNormal->bind();
+            _vaoNormal->draw();
+        } else {
+            _vao->bind();
+            _vao->draw();
+        }
 
         _programLight->bind();
         _programLight->setUniform3f("materialColor", lightColor);
         _programLight->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
 
+        _vao->bind();
         _vao->draw();
     }
 
@@ -165,15 +191,91 @@ public:
 
 private:
     SFLVertexArray *_vao;
+    SFLVertexArray *_vaoNormal;
     SFLTexture *_texDiffuse;  //漫反射贴图
     SFLTexture *_texSpecular; //镜面贴图
     SFLTexture *_texEmission; //放射贴图
+    SFLTexture *_texNormalBG; //法线贴图—背景图
+    SFLTexture *_texNormal;   //法线贴图-法线图
     SFLShaderProgram *_programTex;
     SFLShaderProgram *_programDir;
     SFLShaderProgram *_programPoint;
     SFLShaderProgram *_programSpot;
     SFLShaderProgram *_programMulti;
     SFLShaderProgram *_programLight;
+    SFLShaderProgram *_programTexNormal;
+
+    void initVAONormal() {
+        // positions
+        gm::vec3 pos1(-1.0, 1.0, 0.0);
+        gm::vec3 pos2(-1.0, -1.0, 0.0);
+        gm::vec3 pos3(1.0, -1.0, 0.0);
+        gm::vec3 pos4(1.0, 1.0, 0.0);
+        // texture coordinates
+        gm::vec2 uv1(0.0, 1.0);
+        gm::vec2 uv2(0.0, 0.0);
+        gm::vec2 uv3(1.0, 0.0);
+        gm::vec2 uv4(1.0, 1.0);
+        // normal vector z
+        gm::vec3 nm(0.0, 0.0, 1.0);
+
+        // calculate tangent/bitangent vectors of both triangles
+        gm::vec3 tangent1, bitangent1;
+        gm::vec3 tangent2, bitangent2;
+        // - triangle 1
+        gm::vec3 edge1 = pos2 - pos1;
+        gm::vec3 edge2 = pos3 - pos1;
+        gm::vec2 deltaUV1 = uv2 - uv1;
+        gm::vec2 deltaUV2 = uv3 - uv1;
+
+        GLfloat f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+        tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+        tangent1 = gm::normalize(tangent1);
+
+        bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+        bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+        bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+        bitangent1 = gm::normalize(bitangent1);
+
+        // - triangle 2
+        edge1 = pos3 - pos1;
+        edge2 = pos4 - pos1;
+        deltaUV1 = uv3 - uv1;
+        deltaUV2 = uv4 - uv1;
+
+        f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+        tangent2.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        tangent2.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        tangent2.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+        tangent2 = gm::normalize(tangent2);
+
+
+        bitangent2.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+        bitangent2.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+        bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+        bitangent2 = gm::normalize(bitangent2);
+
+
+        GLfloat quadVertices[] = {
+            // Positions            // normal         // TexCoords  // Tangent                          // Bitangent
+            pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+            pos2.x, pos2.y, pos2.z, nm.x, nm.y, nm.z, uv2.x, uv2.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+            pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+
+            pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+            pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+            pos4.x, pos4.y, pos4.z, nm.x, nm.y, nm.z, uv4.x, uv4.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z
+        };
+
+        _vaoNormal->initializeOpenGLFunctions();
+        _vaoNormal->create();
+        _vaoNormal->bind();
+        _vaoNormal->setData(quadVertices, 14 * 6, 6, {3,3,2,3,3});
+    }
 
     void initTexture(){
         _texDiffuse->initializeOpenGLFunctions();
@@ -187,6 +289,14 @@ private:
         _texEmission->initializeOpenGLFunctions();
         _texEmission->creat(GL_TEXTURE2);
         _texEmission->loadTexture2DFromPath(":/magic.jpeg");
+
+        _texNormalBG->initializeOpenGLFunctions();
+        _texNormalBG->creat(GL_TEXTURE3);
+        _texNormalBG->loadTexture2DFromPath(":/brickwall.jpg");
+
+        _texNormal->initializeOpenGLFunctions();
+        _texNormal->creat(GL_TEXTURE4);
+        _texNormal->loadTexture2DFromPath(":/brickwall_normal.jpg");
     }
 
     void initProgramLight(gm::vec3 &lightPosition, const float *projectonMatPtr){
@@ -208,6 +318,21 @@ private:
         _programTex->setUniformMatrix4fv("model", gm::valuePtrFrom(gm::mat4(1.0)));
         _texDiffuse->bind();
         _programTex->setUniform1i("material", 0);
+    }
+
+    void initProgramTexNormal(gm::vec3 &lightPosition, const float *projectonMatPtr){
+        _programTexNormal->initializeOpenGLFunctions();
+        _programTexNormal->loadFromPath(":/textureNormal.vsh",":/textureNormal.fsh");
+        _programTexNormal->bind();
+        _programTexNormal->setUniformMatrix4fv("projection", projectonMatPtr);
+        _programTexNormal->setUniformMatrix4fv("model", gm::valuePtrFrom(gm::mat4(1.0)));
+        _programTexNormal->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
+        _texNormalBG->bind();
+        _programTexNormal->setUniform1i("diffuseMap", 3);
+        _texNormal->bind();
+        _programTexNormal->setUniform1i("normalMap", 4);
+        _programTexNormal->setUniform3f("lightPos", lightPosition);
+        _programTexNormal->setUniform3f("viewPos", _delegateCamaera->position);
     }
 
     void initProgramDir(gm::vec3 &lightPosition, const float *projectonMatPtr){
@@ -269,6 +394,11 @@ private:
     void setProgramTexture(){
         _programTex->bind();
         _programTex->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
+    }
+
+    void setProgramTextureNormal(){
+        _programTexNormal->bind();
+        _programTexNormal->setUniformMatrix4fv("view", gm::valuePtrFrom(_delegateCamaera->viewMatrix()));
     }
 
     void setProgramDir(){

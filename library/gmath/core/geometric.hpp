@@ -118,6 +118,20 @@ namespace gm {
 
         return m4;
     }
+
+    template<typename T>
+    gm_mat4<T> ortho(const T left, const T right, const T bottom, const T top, const T zNear, const T zFar) {
+        gm_mat4<T> m4(0);
+        m4[0][0] = T(2) / (right - left);
+        m4[1][1] = T(2) / (top - bottom);
+        m4[2][2] = - T(2) / (zFar - zNear);
+        m4[3][0] = - (right + left) / (right - left);
+        m4[3][1] = - (top + bottom) / (top - bottom);
+        m4[3][2] = - (zFar + zNear) / (zFar - zNear);
+        m4[3][3] = T(1);
+
+        return m4;
+    }
     
 }
 #endif // GEOMETRIC_H

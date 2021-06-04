@@ -4,6 +4,30 @@
 #include "../common/SFLModelAbstract.h"
 #include "../renders/SFLCameraVirtual.h"
 
+void glCheckError(const char* title)
+{
+  unsigned int errorCode = glGetError();
+
+  if (errorCode != GL_NO_ERROR)
+  {
+    const char* error = nullptr;
+    switch (errorCode)
+    {
+      case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
+      case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
+      case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
+      case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
+      case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
+    }
+
+    if (error != nullptr) {
+      printf("GL %s Error %s\n", title, error);
+    } else {
+      printf("GL %s Error code 0x%x\n", title, errorCode);
+    }
+  }
+}
+
 SFLViewRender::SFLViewRender(QWidget *parent):QOpenGLWidget(parent)
 {
     _camera = new SFLCameraVirtual(gm::vec3(0.0, 0.0, 3.0));
@@ -14,9 +38,11 @@ void SFLViewRender::paintGL()
 {
     if (!_delegate) return;
 
-    _delegate->render();
+    const int pixelRadio = devicePixelRatio();
+    _delegate->render(pixelRadio * width(), pixelRadio * height());
 
-    qDebug() << __func__ << _delegate;
+
+//    qDebug() << __func__ << _delegate;
 }
 
 void SFLViewRender::initializeGL()

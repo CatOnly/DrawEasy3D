@@ -61,10 +61,10 @@ public:
         }
     }
 
-    void draw(GLint beginIdx = 0, GLsizei count = 0){
+    void draw(GLenum type = GL_TRIANGLES, GLint beginIdx = 0, GLsizei count = 0){
         if (count) _count = count;
 
-        glDrawArrays(GL_TRIANGLES, beginIdx, _count);
+        glDrawArrays(type, beginIdx, _count);
     }
 
 private:

@@ -2,6 +2,7 @@
 #include <vector>
 #include "../models/SFLModelNoLight.h"
 #include "../models/SFLModelLight.h"
+#include "../models/SFLModelShadow.h"
 #include "../models/SFLModelMapping.h"
 #include "../models/SFLModelLoadModel.h"
 #include "../models/SFLModelPostprocessing.h"
@@ -33,6 +34,7 @@ void SFLToolBar::initData()
 {
     _renderObjects->push_back(new SFLModelNoLight());
     _renderObjects->push_back(new SFLModelLight());
+    _renderObjects->push_back(new SFLModelShadow());
     _renderObjects->push_back(new SFLModelMapping());
     _renderObjects->push_back(new SFLModelLoadModel());
     _renderObjects->push_back(new SFLModelPostprocessing());

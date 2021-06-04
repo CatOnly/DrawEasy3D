@@ -47,6 +47,7 @@ SOURCES += \
         views/SFLToolBar.cpp \
         views/SFLViewLight.cpp \
         views/SFLViewNoLight.cpp \
+        views/SFLViewShadow.cpp \
         common/SFLModelAbstract.cpp \
         common/SFLVec3Editor.cpp \
         common/SFLSelectorLayout.cpp \
@@ -57,10 +58,12 @@ SOURCES += \
 
 HEADERS += \
         MainWindow.h \
+        models/SFLModelShadow.h \
         views/SFLViewRender.h \
         views/SFLViewControl.h \
         views/SFLToolBar.h \
         views/SFLViewLight.h \
+        views/SFLViewShadow.h \
         common/SFLModelAbstract.h \
         models/SFLModelLight.h \
         views/SFLViewNoLight.h \

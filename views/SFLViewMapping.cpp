@@ -6,7 +6,7 @@
 
 SFLViewMapping::SFLViewMapping(SFLModelAbstract *owner, QWidget *parent):SFLViewAbstract(owner, parent)
 {
-    _types = QStringList({"普通贴图", "光照贴图"});
+    _types = QStringList({"普通贴图", "光照贴图", "法线贴图", "视差贴图"});
 
     _lightOption = new SFLSelectorLayout("光源");
     _lightOption->setSelections({"定向光", "点光源", "聚光灯", "混合光照"});
@@ -97,6 +97,18 @@ void SFLViewMapping::changeViewBy(int index)
         _lightEmitValue->show();
         _lightColor->show();
         model->type = SFLModelMapping::typeLightDir;
+        break;
+    case 2:
+        _lightOption->hide();
+        _lightEmitValue->hide();
+        _lightColor->hide();
+        model->type = SFLModelMapping::typeTexNormal;
+        break;
+    case 3:
+        _lightOption->hide();
+        _lightEmitValue->hide();
+        _lightColor->hide();
+        model->type = SFLModelMapping::typeTexParallax;
         break;
     }
 

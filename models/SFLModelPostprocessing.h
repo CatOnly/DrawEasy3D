@@ -107,7 +107,7 @@ public:
         _postProcessing->initializeOpenGLFunctions();
     }
 
-    void render() override {
+    void render(int viewPortW, int viewPortH) override {
         glClearColor(0.984f, 0.306f, 0.56f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 

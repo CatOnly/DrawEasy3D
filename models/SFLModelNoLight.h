@@ -51,7 +51,7 @@ public:
         glUniform1i(glGetUniformLocation(_programID, "ourTexture"), 0);
     }
 
-    void render() override {
+    void render(int viewPortW, int viewPortH) override {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
         glUseProgram(_programID);
